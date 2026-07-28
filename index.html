@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#143e32">
+<title>Father & Son Roadbook</title>
+<style>
+:root{--bg:#edf2ed;--card:#fffdf8;--ink:#1d2923;--muted:#728078;--green:#143e32;--green2:#2d6b54;--sand:#e9deca;--orange:#d77a42;--line:#dde5df}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink)}
+.app{max-width:480px;margin:auto;min-height:100vh;padding-bottom:96px}
+header{padding:calc(18px + env(safe-area-inset-top)) 18px 24px;background:linear-gradient(145deg,#102d25,#2d6b54);color:white;border-radius:0 0 28px 28px}
+.kicker{font-size:12px;letter-spacing:.14em;text-transform:uppercase;opacity:.75}
+h1{font-size:30px;line-height:1.05;margin:16px 0 8px}
+header p{margin:0;opacity:.85}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}.chip{font-size:12px;padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.13)}
+main{padding:14px}.page{display:none}.page.active{display:block}
+.card{background:var(--card);border-radius:20px;padding:16px;margin-bottom:14px;box-shadow:0 10px 24px rgba(20,62,50,.10)}
+h2{font-size:18px;margin:0 0 12px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat strong{font-size:25px;display:block}.stat span,.small{font-size:12px;color:var(--muted)}
+.progress{height:10px;background:#e6ebe7;border-radius:999px;overflow:hidden}.bar{height:100%;background:var(--green2);width:0;transition:.2s}
+.check{display:flex;gap:10px;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--line)}
+.check:last-child{border-bottom:0}input[type=checkbox]{width:22px;height:22px;accent-color:var(--green2)}
+textarea,input,select{width:100%;font:inherit;border:1px solid var(--line);border-radius:13px;padding:12px;background:white}
+textarea{min-height:78px;resize:vertical;margin-top:8px}
+.place{border:1px solid var(--line);border-radius:17px;padding:14px;margin-top:12px;background:white}
+.row{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.badge{font-size:11px;padding:5px 8px;border-radius:999px;background:#e4f0e8;color:#245e47}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+.btn{display:block;border:0;border-radius:14px;padding:13px;text-align:center;text-decoration:none;font-weight:750;background:var(--green);color:white;font-size:15px}
+.btn.alt{background:var(--sand);color:var(--ink)}.btn.danger{background:#914a3d}
+details{background:white;border:1px solid var(--line);border-radius:15px;padding:12px;margin-top:10px}
+summary{font-weight:800}
+.money{display:grid;grid-template-columns:1fr 110px;gap:10px;align-items:center;margin:10px 0}
+.total{font-size:24px;font-weight:800;margin-top:14px}
+nav{position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:min(480px,100%);display:grid;grid-template-columns:repeat(5,1fr);background:rgba(255,253,248,.97);backdrop-filter:blur(16px);border-top:1px solid var(--line);padding:8px 4px calc(8px + env(safe-area-inset-bottom));z-index:20}
+nav button{border:0;background:none;color:#78857e;font-size:11px;padding:4px}nav span{display:block;font-size:21px;margin-bottom:3px}nav button.active{color:var(--green);font-weight:800}
+.toast{position:fixed;left:50%;bottom:88px;transform:translateX(-50%);background:#17251f;color:white;border-radius:999px;padding:9px 13px;opacity:0;transition:.2s;z-index:30}.toast.show{opacity:1}
+.help{background:#fff1dd;border:1px solid #edd1aa}.help strong{display:block;margin-bottom:6px}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+<div class="kicker">Premium Roadbook</div>
+<h1>Father & Son<br>Adventure 2026</h1>
+<p>Soča-Tal · Rovinj · VW California</p>
+<div class="chips"><span class="chip">08.–15.08.2026</span><span class="chip">2 Abenteurer</span></div>
+</header>
+
+<main>
+<section id="start" class="page active">
+<div class="card help"><strong>📱 iPhone-Hinweis</strong><span class="small">Diese Version braucht keine Installation. Öffne sie einfach in Safari oder über „Dateien“ und lasse den Tab geöffnet.</span></div>
+<div class="grid">
+<div class="card stat"><strong id="pct">0%</strong><span>Vorbereitung</span></div>
+<div class="card stat"><strong id="done">0</strong><span>Erledigt</span></div>
+</div>
+<div class="card"><h2>Fortschritt</h2><div class="progress"><div class="bar" id="bar"></div></div><p class="small" id="ratio">0 von 0 Punkten</p></div>
+<div class="card"><h2>Heute wichtig</h2>
+<label class="check"><input type="checkbox" data-save id="a1"> Campingplatz bestätigen</label>
+<label class="check"><input type="checkbox" data-save id="a2"> Fahrräder prüfen</label>
+<label class="check"><input type="checkbox" data-save id="a3"> Maut und Vignetten prüfen</label>
+<label class="check"><input type="checkbox" data-save id="a4"> Reiseapotheke einpacken</label>
+<textarea data-save id="quick" placeholder="Schnellnotiz"></textarea>
+</div>
+</section>
+
+<section id="camping" class="page">
+<div class="card"><h2>Campingplätze</h2>
+<div class="place">
+<div class="row"><div><strong>Camping Klin</strong><div class="small">Lepena · Soča-Tal</div></div><span class="badge">Priorität 1</span></div>
+<div class="actions"><a class="btn" href="tel:+38653889513">☎ Anrufen</a><a class="btn alt" href="https://maps.google.com/?q=Camping+Klin+Slovenia">📍 Karte</a></div>
+<select data-save id="s1"><option value="">Status wählen</option><option>Angerufen</option><option>Zusage</option><option>Absage</option><option>Warteliste</option></select>
+<textarea data-save id="n1" placeholder="Notizen"></textarea>
+</div>
+<div class="place">
+<div class="row"><div><strong>Camping Lazar</strong><div class="small">Kobarid</div></div><span class="badge">Priorität 2</span></div>
+<div class="actions"><a class="btn" href="tel:+38653885333">☎ Anrufen</a><a class="btn alt" href="https://maps.google.com/?q=Camping+Lazar+Kobarid">📍 Karte</a></div>
+<select data-save id="s2"><option value="">Status wählen</option><option>Angerufen</option><option>Zusage</option><option>Absage</option><option>Warteliste</option></select>
+<textarea data-save id="n2" placeholder="Notizen"></textarea>
+</div>
+<details><summary>Englisches Telefonskript</summary>
+<p>Hello, my name is [name]. I’m travelling with my 13-year-old son in a VW California camper van.</p>
+<p>We are looking for a pitch from 8 August until 11 August 2026, for three nights.</p>
+<p>Do you have any available space, even a small one?</p>
+</details>
+</div>
+</section>
+
+<section id="plan" class="page">
+<div class="card"><h2>Tagesplan</h2>
+<details open><summary>08.08. · Anreise ins Soča-Tal</summary>
+<label class="check"><input type="checkbox" data-save id="d1"> Frühstück und Camper-Check</label>
+<label class="check"><input type="checkbox" data-save id="d2"> Abfahrt</label>
+<label class="check"><input type="checkbox" data-save id="d3"> Ankommen und Baden</label>
+<textarea data-save id="dn1" placeholder="Tagesnotizen"></textarea>
+</details>
+<details><summary>09.08. · Kobarid & Kozjak</summary>
+<label class="check"><input type="checkbox" data-save id="d4"> Napoleonbrücke</label>
+<label class="check"><input type="checkbox" data-save id="d5"> Kozjak-Wasserfall</label>
+<label class="check"><input type="checkbox" data-save id="d6"> Badestopp an der Soča</label>
+<textarea data-save id="dn2" placeholder="Tagesnotizen"></textarea>
+</details>
+<details><summary>10.08. · Abenteuer-Tag</summary>
+<label class="check"><input type="checkbox" data-save id="d7"> Rafting, Kajak oder Canyoning</label>
+<label class="check"><input type="checkbox" data-save id="d8"> Eis- und Fotostopp</label>
+<textarea data-save id="dn3" placeholder="Tagesnotizen"></textarea>
+</details>
+<details><summary>11.–15.08. · Istrien</summary>
+<label class="check"><input type="checkbox" data-save id="d9"> Rovinj-Radtour</label>
+<label class="check"><input type="checkbox" data-save id="d10"> Kap Kamenjak</label>
+<label class="check"><input type="checkbox" data-save id="d11"> Abschlussessen</label>
+<textarea data-save id="dn4" placeholder="Tagesnotizen"></textarea>
+</details>
+</div>
+</section>
+
+<section id="listen" class="page">
+<div class="card"><h2>Packliste</h2>
+<label class="check"><input type="checkbox" data-save id="p1"> CEE-Adapter und Kabel</label>
+<label class="check"><input type="checkbox" data-save id="p2"> Fahrradhelme und Schlösser</label>
+<label class="check"><input type="checkbox" data-save id="p3"> Pumpe und Ersatzschlauch</label>
+<label class="check"><input type="checkbox" data-save id="p4"> Badeschuhe und Dry Bag</label>
+<label class="check"><input type="checkbox" data-save id="p5"> Sonnencreme und Erste Hilfe</label>
+<textarea data-save id="custom" placeholder="Eigene Ergänzungen"></textarea>
+</div>
+<div class="card"><h2>Einkauf</h2>
+<label class="check"><input type="checkbox" data-save id="e1"> Wasser und Getränke</label>
+<label class="check"><input type="checkbox" data-save id="e2"> Frühstück und Snacks</label>
+<label class="check"><input type="checkbox" data-save id="e3"> Obst und Grillzeug</label>
+<textarea data-save id="shopping" placeholder="Eigene Einkaufspunkte"></textarea>
+</div>
+</section>
+
+<section id="budget" class="page">
+<div class="card"><h2>Budget</h2>
+<div class="money"><label>Diesel</label><input type="number" data-money id="m1" value="250"></div>
+<div class="money"><label>Maut</label><input type="number" data-money id="m2" value="80"></div>
+<div class="money"><label>Camping</label><input type="number" data-money id="m3" value="600"></div>
+<div class="money"><label>Essen</label><input type="number" data-money id="m4" value="350"></div>
+<div class="money"><label>Aktivitäten</label><input type="number" data-money id="m5" value="250"></div>
+<div class="total">Gesamt: <span id="total">0,00 €</span></div>
+</div>
+<div class="card"><h2>Reisetagebuch</h2>
+<textarea data-save id="j1" placeholder="Schönster Moment"></textarea>
+<textarea data-save id="j2" placeholder="Was war heute besonders?"></textarea>
+<textarea data-save id="j3" placeholder="Was machen wir morgen?"></textarea>
+</div>
+<div class="card"><button class="btn danger" id="reset">Alle Eingaben löschen</button></div>
+</section>
+</main>
+</div>
+
+<nav>
+<button class="active" data-tab="start"><span>🏠</span>Start</button>
+<button data-tab="camping"><span>☎️</span>Camping</button>
+<button data-tab="plan"><span>🗓️</span>Plan</button>
+<button data-tab="listen"><span>✅</span>Listen</button>
+<button data-tab="budget"><span>💶</span>Budget</button>
+</nav>
+<div class="toast" id="toast">Gespeichert</div>
+
+<script>
+const KEY="roadbook-iphone-simple-v1";
+let data={};
+try{data=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){data={}}
+function toast(){const t=document.getElementById("toast");t.classList.add("show");clearTimeout(window.tt);window.tt=setTimeout(()=>t.classList.remove("show"),700)}
+function persist(){localStorage.setItem(KEY,JSON.stringify(data));update();toast()}
+document.querySelectorAll("[data-save]").forEach(el=>{
+ if(data[el.id]!==undefined) el.type==="checkbox"?el.checked=!!data[el.id]:el.value=data[el.id];
+ el.addEventListener("input",()=>{data[el.id]=el.type==="checkbox"?el.checked:el.value;persist()})
+})
+document.querySelectorAll("[data-money]").forEach(el=>{
+ if(data[el.id]!==undefined) el.value=data[el.id];
+ el.addEventListener("input",()=>{data[el.id]=el.value;persist()})
+})
+document.querySelectorAll("nav button").forEach(btn=>btn.addEventListener("click",()=>{
+ document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
+ document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+ btn.classList.add("active");document.getElementById(btn.dataset.tab).classList.add("active");scrollTo(0,0)
+}))
+function update(){
+ const c=[...document.querySelectorAll('input[type=checkbox][data-save]')],d=c.filter(x=>x.checked).length,p=c.length?Math.round(d/c.length*100):0;
+ document.getElementById("pct").textContent=p+"%";document.getElementById("done").textContent=d;document.getElementById("ratio").textContent=d+" von "+c.length+" Punkten";document.getElementById("bar").style.width=p+"%";
+ let s=0;document.querySelectorAll("[data-money]").forEach(e=>s+=Number(e.value)||0);document.getElementById("total").textContent=s.toLocaleString("de-DE",{style:"currency",currency:"EUR"})
+}
+document.getElementById("reset").addEventListener("click",()=>{if(confirm("Alle Eingaben wirklich löschen?")){localStorage.removeItem(KEY);location.reload()}})
+update();
+</script>
+</body>
+</html>
