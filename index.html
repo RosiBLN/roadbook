@@ -2,383 +2,133 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#143d32">
-<title>Father & Son Adventure 2026</title>
-<style>
-:root{
- --bg:#eef3ef;--card:#fffdf8;--ink:#192820;--muted:#748179;
- --green:#143d32;--green2:#2d6c55;--green3:#dcece3;
- --sand:#efe1ca;--orange:#d87942;--red:#974b40;--line:#dfe7e1;
- --shadow:0 12px 30px rgba(20,61,50,.11)
-}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html{scroll-behavior:smooth}
-body{margin:0;background:radial-gradient(circle at top right,rgba(45,108,85,.12),transparent 30%),var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink)}
-.app{max-width:580px;margin:auto;min-height:100vh;padding-bottom:108px}
-.hero{position:relative;overflow:hidden;padding:calc(20px + env(safe-area-inset-top)) 18px 25px;background:linear-gradient(145deg,#0f2c24,#245b49 60%,#39755e);color:white;border-radius:0 0 30px 30px}
-.hero:after{content:"";position:absolute;width:240px;height:240px;border-radius:50%;background:rgba(255,255,255,.06);right:-90px;top:-80px}
-.kicker{font-size:12px;letter-spacing:.16em;text-transform:uppercase;opacity:.75}
-h1{font-size:31px;line-height:1.03;margin:14px 0 8px;max-width:420px}
-.hero p{margin:0;opacity:.85}
-.hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:10px;margin-top:17px}
-.hero-box{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.15);backdrop-filter:blur(10px);border-radius:18px;padding:13px}
-.hero-box strong{display:block;font-size:22px}.hero-box span{font-size:12px;opacity:.78}
-main{padding:14px}.page{display:none}.page.active{display:block}
-.card{background:var(--card);border-radius:21px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow)}
-.card.soft{background:linear-gradient(135deg,#fffdf8,#f5efe4)}
-.card.tip{background:#fff0dc;border:1px solid #efd3ad}
-.section-title{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:12px}
-h2{font-size:18px;margin:0}.small{font-size:12px;color:var(--muted)}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.stat strong{display:block;font-size:25px}.stat span{font-size:12px;color:var(--muted)}
-.progress{height:11px;background:#e5ebe7;border-radius:999px;overflow:hidden}
-.bar{height:100%;width:0;background:linear-gradient(90deg,var(--green2),#60967e);transition:.3s}
-.pill,.badge{font-size:11px;padding:6px 9px;border-radius:999px;background:var(--green3);color:var(--green);white-space:nowrap}
-.check{display:flex;gap:11px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line)}
-.check:last-child{border-bottom:0}.check span{flex:1}
-input[type=checkbox]{width:23px;height:23px;accent-color:var(--green2);flex:0 0 auto}
-input,select,textarea{width:100%;font:inherit;color:var(--ink);background:white;border:1px solid var(--line);border-radius:14px;padding:12px}
-textarea{min-height:82px;resize:vertical;margin-top:9px}
-.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:11px}
-.btn{display:block;border:0;border-radius:14px;padding:13px;text-align:center;text-decoration:none;font-weight:800;font-size:14px;background:var(--green);color:white;cursor:pointer}
-.btn.alt{background:var(--sand);color:var(--ink)}.btn.orange{background:var(--orange)}.btn.danger{background:var(--red)}
-.place,.route,.daycard,.journal-entry{border:1px solid var(--line);border-radius:18px;padding:14px;margin-top:11px;background:white}
-.row{display:flex;justify-content:space-between;align-items:center;gap:10px}
-details{background:white;border:1px solid var(--line);border-radius:16px;padding:12px;margin-top:10px}
-summary{font-weight:800;cursor:pointer}
-.money{display:grid;grid-template-columns:1fr 110px;gap:10px;align-items:center;margin:10px 0}
-.total{font-size:24px;font-weight:850;margin-top:14px}
-.tabs{display:flex;gap:8px;overflow:auto;padding-bottom:5px;margin-bottom:10px}
-.tabs button{border:1px solid var(--line);background:white;border-radius:999px;padding:8px 11px;white-space:nowrap}
-.tabs button.active{background:var(--green);color:white}
-.photo-preview{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:10px}
-.photo-preview img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:12px;border:1px solid var(--line)}
-.dayhead{display:flex;gap:12px;align-items:center;margin-bottom:12px}
-.daynum{width:56px;height:56px;border-radius:17px;background:var(--green);color:#fff;display:grid;place-items:center;text-align:center;font-weight:850;line-height:1.05}
-.daynum small{display:block;font-size:10px;font-weight:600;opacity:.8}
-.meta{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
-.meta div{background:#f2f6f3;border-radius:13px;padding:10px}
-.meta strong{display:block;font-size:13px}.meta span{font-size:11px;color:var(--muted)}
-.listline{padding:8px 0;border-bottom:1px solid var(--line)}.listline:last-child{border-bottom:0}
-.nav{position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:min(580px,100%);display:grid;grid-template-columns:repeat(6,1fr);background:rgba(255,253,248,.96);backdrop-filter:blur(18px);border-top:1px solid var(--line);padding:8px 3px calc(8px + env(safe-area-inset-bottom));z-index:20}
-.nav button{border:0;background:none;color:#78857e;font-size:10px;padding:4px 1px}.nav span{display:block;font-size:20px;margin-bottom:3px}.nav button.active{color:var(--green);font-weight:850}
-.toast{position:fixed;left:50%;bottom:98px;transform:translateX(-50%);background:#17251f;color:#fff;border-radius:999px;padding:9px 14px;opacity:0;transition:.2s;z-index:30}.toast.show{opacity:1}
-.toolbar{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-@media(min-width:760px){body{padding:18px}.app{border-radius:28px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.13)}}
-</style>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#143d34">
+<title>Roadbook 3.0 – Elias & Papa</title>
+<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 <div class="app">
 <header class="hero">
- <div class="kicker">Roadbook · Version 1.3</div>
- <h1>Father & Son Adventure 2026</h1>
- <p>Kärnten · Soča-Tal · Rovinj · VW California</p>
- <div class="hero-grid">
-  <div class="hero-box"><strong id="countdown">–</strong><span>bis zur Abfahrt</span></div>
-  <div class="hero-box"><strong>08.–15.08.</strong><span>Reisezeitraum</span></div>
- </div>
+  <div class="kicker">ROADBOOK 3.0</div>
+  <h1>Father & Son<br>Adventure</h1>
+  <p>Elias & Papa · 08.–15. August 2026</p>
+  <div class="hero-stats">
+    <div><strong id="countdown">–</strong><span>bis zum Start</span></div>
+    <div><strong id="openHero">–</strong><span>Plätze offen</span></div>
+  </div>
 </header>
 
 <main>
-<section id="start" class="page active">
- <div class="grid">
-  <div class="card stat"><strong id="pct">0%</strong><span>Vorbereitung</span></div>
-  <div class="card stat"><strong id="done">0</strong><span>Punkte erledigt</span></div>
- </div>
- <div class="card">
-  <div class="section-title"><h2>Reisebereitschaft</h2><span class="pill" id="statusText">Startklar machen</span></div>
-  <div class="progress"><div class="bar" id="bar"></div></div>
-  <p class="small" id="ratio"></p>
- </div>
- <div class="card soft">
-  <div class="section-title"><h2>Als Nächstes</h2><span class="small">Prioritäten</span></div>
-  <label class="check"><input type="checkbox" data-save id="a1"><span>Campingplätze verbindlich bestätigen</span></label>
-  <label class="check"><input type="checkbox" data-save id="a2"><span>Fahrräder, Träger und Schlösser prüfen</span></label>
-  <label class="check"><input type="checkbox" data-save id="a3"><span>Vignetten, Maut und Dokumente prüfen</span></label>
-  <label class="check"><input type="checkbox" data-save id="a4"><span>Rafting oder Canyoning reservieren</span></label>
-  <textarea data-save id="quick" placeholder="Schnellnotiz"></textarea>
- </div>
- <div class="card tip"><strong>🏔️ Neue Startplanung</strong><p class="small">Die Reise beginnt am 08.08. in Kärnten. Die erste Etappe führt ins Soča-Tal. Den konkreten Startort kannst du unten bei „Plan“ eintragen.</p></div>
+<section class="page active" id="home">
+  <div class="grid">
+    <article class="card metric"><span>Camping-Anrufe</span><strong id="calledMetric">0 / 0</strong><div class="bar"><i id="callBar"></i></div></article>
+    <article class="card metric"><span>Reservierungen</span><strong id="bookedMetric">0</strong><small>Soča & Istrien</small></article>
+  </div>
+  <article class="card accent">
+    <div class="row"><div><span class="eyebrow">NÄCHSTER SCHRITT</span><h2 id="nextName">Campingplatz auswählen</h2><p id="nextPlace">Die Leitstelle erstellt deine Reihenfolge.</p></div><div class="big-icon">☎️</div></div>
+    <button class="primary" id="homeNext">Zur Camping-Leitstelle</button>
+  </article>
+  <article class="card">
+    <h2>Reisegrundlage</h2>
+    <div class="timeline">
+      <div><b>08.08.</b><span>Start Hotel Glocknerhof, Berg im Drautal</span></div>
+      <div><b>flexibel</b><span>Soča-Tal: Rad, Baden, Rafting/Canyoning</span></div>
+      <div><b>flexibel</b><span>Istrien: Rovinj, Küste und Kap Kamenjak</span></div>
+      <div><b>15.08.</b><span>Wieder in Berlin</span></div>
+    </div>
+  </article>
+  <article class="card">
+    <h2>Vorbereitung</h2>
+    <label class="task"><input type="checkbox" data-save id="prepBike"><span>Fahrräder und Träger prüfen</span></label>
+    <label class="task"><input type="checkbox" data-save id="prepDocs"><span>Ausweise, Versicherungen und Vignetten</span></label>
+    <label class="task"><input type="checkbox" data-save id="prepCamp"><span>Campingplätze systematisch abtelefonieren</span></label>
+    <label class="task"><input type="checkbox" data-save id="prepReturn"><span>Rückfahrt für den 15.08. festlegen</span></label>
+  </article>
 </section>
 
-<section id="orte" class="page">
- <div class="card">
-  <div class="section-title"><h2>Karte & Navigation</h2><span class="pill">Routen</span></div>
-  <div class="route">
-   <div class="row"><div><strong>Kärnten → Soča-Tal</strong><div class="small">Start am 08.08.</div></div><span class="badge">Etappe 1</span></div>
-   <input data-save id="startort" placeholder="Genauer Startort in Kärnten">
-   <div class="actions"><a class="btn" href="https://www.google.com/maps/dir/Kärnten/Lepena,+Slowenien">🧭 Navigation</a><a class="btn alt" href="https://www.google.com/search?q=Wetter+Soča+Tal">☀️ Wetter</a></div>
+<section class="page" id="camping">
+  <div class="section-head"><div><span class="eyebrow">CAMPING-LEITSTELLE</span><h2>Plätze abtelefonieren</h2></div><button class="icon-btn" id="addBtn">＋</button></div>
+  <div class="summary" id="summary"></div>
+  <button class="call-next" id="callNext">☎ Nächsten offenen Platz anzeigen</button>
+  <div class="filters">
+    <button class="active" data-region="Alle">Alle</button>
+    <button data-region="Soča-Tal">Soča</button>
+    <button data-region="Istrien">Istrien</button>
   </div>
-  <div class="route">
-   <div class="row"><div><strong>Kobarid & Kozjak</strong><div class="small">Wasserfall, Brücke, Soča</div></div><span class="badge">Natur</span></div>
-   <div class="actions"><a class="btn" href="https://maps.google.com/?q=Kozjak+Waterfall+Slovenia">📍 Karte</a><a class="btn alt" href="https://www.google.com/search?q=Wetter+Kobarid">☀️ Wetter</a></div>
-  </div>
-  <div class="route">
-   <div class="row"><div><strong>Soča-Tal → Rovinj</strong><div class="small">Panoramaroute nach Istrien</div></div><span class="badge">Etappe 2</span></div>
-   <div class="actions"><a class="btn" href="https://www.google.com/maps/dir/Kobarid,+Slowenien/Rovinj,+Kroatien">🧭 Navigation</a><a class="btn alt" href="https://www.google.com/search?q=Wetter+Rovinj">☀️ Wetter</a></div>
-  </div>
-  <div class="route">
-   <div class="row"><div><strong>Kap Kamenjak</strong><div class="small">Baden, Klippen, Radfahren</div></div><span class="badge">Abenteuer</span></div>
-   <div class="actions"><a class="btn" href="https://maps.google.com/?q=Cape+Kamenjak+Croatia">📍 Karte</a><a class="btn alt" href="https://www.google.com/search?q=Wetter+Kap+Kamenjak">☀️ Wetter</a></div>
-  </div>
- </div>
+  <select id="statusFilter">
+    <option value="Alle">Alle Status</option>
+    <option value="offen">Noch anrufen</option>
+    <option value="keine-antwort">Keine Antwort</option>
+    <option value="rueckruf">Rückruf</option>
+    <option value="warteliste">Warteliste</option>
+    <option value="reserviert">Reserviert</option>
+    <option value="ausgebucht">Ausgebucht</option>
+  </select>
+  <div id="campList"></div>
 </section>
 
-<section id="camping" class="page">
- <div class="card">
-  <div class="section-title"><h2>Campingverwaltung</h2><span class="pill">Reservierungen</span></div>
-  <div class="place">
-   <div class="row"><div><strong>Camping Klin</strong><div class="small">Lepena · Soča-Tal</div></div><span class="badge">Priorität 1</span></div>
-   <div class="actions"><a class="btn" href="tel:+38653889513">☎ Anrufen</a><a class="btn alt" href="https://maps.google.com/?q=Camping+Klin+Slovenia">📍 Karte</a></div>
-   <select data-save id="s1"><option value="">Status wählen</option><option>Offen</option><option>Angerufen</option><option>Zusage</option><option>Absage</option><option>Warteliste</option></select>
-   <textarea data-save id="n1" placeholder="Ansprechpartner, Preis, Stellplatz, Notizen"></textarea>
-  </div>
-  <div class="place">
-   <div class="row"><div><strong>Camping Lazar</strong><div class="small">Kobarid</div></div><span class="badge">Alternative</span></div>
-   <div class="actions"><a class="btn" href="tel:+38653885333">☎ Anrufen</a><a class="btn alt" href="https://maps.google.com/?q=Camping+Lazar+Kobarid">📍 Karte</a></div>
-   <select data-save id="s2"><option value="">Status wählen</option><option>Offen</option><option>Angerufen</option><option>Zusage</option><option>Absage</option><option>Warteliste</option></select>
-   <textarea data-save id="n2" placeholder="Ansprechpartner, Preis, Stellplatz, Notizen"></textarea>
-  </div>
-  <div class="place">
-   <div class="row"><div><strong>Valalta / Rovinj</strong><div class="small">Istrien</div></div><span class="badge">Meer</span></div>
-   <div class="actions"><a class="btn" href="https://www.google.com/search?q=Valalta+Camping+Kontakt">☎ Kontakt</a><a class="btn alt" href="https://maps.google.com/?q=Valalta+Camping+Rovinj">📍 Karte</a></div>
-   <select data-save id="s3"><option value="">Status wählen</option><option>Offen</option><option>Angerufen</option><option>Zusage</option><option>Absage</option><option>Warteliste</option></select>
-   <textarea data-save id="n3" placeholder="Ansprechpartner, Preis, Stellplatz, Notizen"></textarea>
-  </div>
- </div>
+<section class="page" id="roadbook">
+  <div class="section-head"><div><span class="eyebrow">FLEXIBLER PLAN</span><h2>Roadbook</h2></div></div>
+  <article class="day card"><div class="date">08<small>AUG</small></div><div><h3>Kärnten → Soča-Tal</h3><p>Start am Hotel Glocknerhof. Ankunft und erster Badestopp.</p></div></article>
+  <article class="day card"><div class="date">09<small>AUG</small></div><div><h3>Kobarid & Kozjak</h3><p>Radtour, Hängebrücke, Wasserfall und Soča.</p></div></article>
+  <article class="day card"><div class="date">10<small>AUG</small></div><div><h3>Wasserabenteuer</h3><p>Rafting oder Canyoning; Treffpunkt möglichst per Rad erreichbar.</p></div></article>
+  <article class="day card"><div class="date">11–13<small>AUG</small></div><div><h3>Istrien flexibel</h3><p>Rovinj, Küstenradwege, Baden und Kap Kamenjak.</p></div></article>
+  <article class="day card"><div class="date">14<small>AUG</small></div><div><h3>Letzte Übernachtung</h3><p>Camper vorbereiten und sichere Rückfahrt planen.</p></div></article>
+  <article class="day card"><div class="date">15<small>AUG</small></div><div><h3>Berlin</h3><p>Ankunft, Abschlussfoto und Adventure Pass auswerten.</p></div></article>
 </section>
 
-<section id="plan" class="page">
- <div class="card">
-  <div class="section-title"><h2>Tages-Roadbook</h2><span class="pill">8 Tage</span></div>
-
-  <div class="daycard">
-   <div class="dayhead"><div class="daynum"><small>SA</small>08.08.</div><div><strong>Kärnten → Soča-Tal</strong><div class="small">Anreise & erstes Flussabenteuer</div></div></div>
-   <div class="meta"><div><strong>🚐 Etappe</strong><span>Kärnten nach Lepena/Kobarid</span></div><div><strong>🧭 Route</strong><span>Vor Abfahrt prüfen</span></div></div>
-   <div class="listline">📍 Mögliche Stopps: Alpenpanorama, Festung Kluže, Bovec</div>
-   <div class="listline">🏊 Baden: erster kurzer Soča-Stopp</div>
-   <div class="listline">📸 Fotospot: Fluss, Hängebrücke oder Bergkulisse</div>
-   <div class="listline">🌧️ Alternative: Bovec, Café, kurzer Aussichtsstopp</div>
-   <label class="check"><input type="checkbox" data-save id="d1"><span>Camper-Check und Abfahrt</span></label>
-   <label class="check"><input type="checkbox" data-save id="d2"><span>Campingplatz beziehen</span></label>
-   <label class="check"><input type="checkbox" data-save id="d3"><span>Erstes Bad in der Soča</span></label>
-   <div class="actions"><a class="btn" href="https://www.google.com/maps/dir/Kärnten/Lepena,+Slowenien">🧭 Route</a><a class="btn alt" href="https://www.google.com/search?q=Wetter+Soča+Tal">☀️ Wetter</a></div>
-   <textarea data-save id="dn1" placeholder="Tagesnotizen"></textarea>
-  </div>
-
-  <div class="daycard">
-   <div class="dayhead"><div class="daynum"><small>SO</small>09.08.</div><div><strong>Kobarid & Kozjak</strong><div class="small">Wasserfall, Geschichte, Baden</div></div></div>
-   <div class="meta"><div><strong>🥾 Aktivität</strong><span>Kozjak-Wanderung</span></div><div><strong>🏊 Baden</strong><span>Soča-Stopp</span></div></div>
-   <div class="listline">📍 Napoleonbrücke und Kozjak-Wasserfall</div>
-   <div class="listline">🚴 Optional: kleine Radrunde rund um Kobarid</div>
-   <div class="listline">📸 Fotospot: Wasserfall und türkisfarbene Soča</div>
-   <div class="listline">🌧️ Alternative: Museum oder Café in Kobarid</div>
-   <label class="check"><input type="checkbox" data-save id="d4"><span>Napoleonbrücke</span></label>
-   <label class="check"><input type="checkbox" data-save id="d5"><span>Kozjak-Wasserfall</span></label>
-   <label class="check"><input type="checkbox" data-save id="d6"><span>Badestopp</span></label>
-   <textarea data-save id="dn2" placeholder="Tagesnotizen"></textarea>
-  </div>
-
-  <div class="daycard">
-   <div class="dayhead"><div class="daynum"><small>MO</small>10.08.</div><div><strong>Abenteuer-Tag</strong><div class="small">Rafting, Canyoning oder Kajak</div></div></div>
-   <div class="meta"><div><strong>🛶 Hauptpunkt</strong><span>Wasserabenteuer</span></div><div><strong>🚴 Optional</strong><span>Radtour</span></div></div>
-   <div class="listline">🛶 Rafting, Kajak oder Canyoning</div>
-   <div class="listline">🍦 Danach Eis- und Fotostopp</div>
-   <div class="listline">🌧️ Alternative: Indoor-Aktivität oder entspannter Bovec-Tag</div>
-   <label class="check"><input type="checkbox" data-save id="d7"><span>Aktivität durchführen</span></label>
-   <label class="check"><input type="checkbox" data-save id="d8"><span>Gemeinsames Abenteuerfoto</span></label>
-   <textarea data-save id="dn3" placeholder="Tagesnotizen"></textarea>
-  </div>
-
-  <div class="daycard">
-   <div class="dayhead"><div class="daynum"><small>DI</small>11.08.</div><div><strong>Soča-Tal → Rovinj</strong><div class="small">Panoramaroute nach Istrien</div></div></div>
-   <div class="meta"><div><strong>🚐 Etappe</strong><span>Kobarid nach Rovinj</span></div><div><strong>🌊 Ziel</strong><span>Meer & Camping</span></div></div>
-   <div class="listline">📍 Unterwegs Aussichtspunkte und Pausen</div>
-   <div class="listline">🏊 Nach Ankunft: Meer oder Pool</div>
-   <div class="listline">🌧️ Alternative: entspannte Anreise und Altstadtbummel</div>
-   <label class="check"><input type="checkbox" data-save id="d9"><span>Panoramaroute fahren</span></label>
-   <label class="check"><input type="checkbox" data-save id="d10"><span>Campingplatz beziehen</span></label>
-   <div class="actions"><a class="btn" href="https://www.google.com/maps/dir/Kobarid,+Slowenien/Rovinj,+Kroatien">🧭 Route</a><a class="btn alt" href="https://www.google.com/search?q=Wetter+Rovinj">☀️ Wetter</a></div>
-   <textarea data-save id="dn4" placeholder="Tagesnotizen"></textarea>
-  </div>
-
-  <div class="daycard">
-   <div class="dayhead"><div class="daynum"><small>MI–SA</small>12.–15.</div><div><strong>Rovinj & Istrien</strong><div class="small">Radfahren, Baden, Kamenjak</div></div></div>
-   <div class="meta"><div><strong>🚴 Rad</strong><span>Rovinj & Küstenwege</span></div><div><strong>🏊 Meer</strong><span>Badetage</span></div></div>
-   <div class="listline">🚴 Rovinj-Radtour und Küstenwege</div>
-   <div class="listline">🏊 Kap Kamenjak und Badestellen</div>
-   <div class="listline">📸 Altstadt, Sonnenuntergang und Meer</div>
-   <div class="listline">🍕 Abschlussessen am Wasser</div>
-   <div class="listline">🌧️ Alternative: Pula, Aquarium oder Altstadt</div>
-   <label class="check"><input type="checkbox" data-save id="d11"><span>Rovinj-Radtour</span></label>
-   <label class="check"><input type="checkbox" data-save id="d12"><span>Kap Kamenjak</span></label>
-   <label class="check"><input type="checkbox" data-save id="d13"><span>Abschlussessen</span></label>
-   <textarea data-save id="dn5" placeholder="Tagesnotizen"></textarea>
-  </div>
- </div>
-</section>
-
-<section id="listen" class="page">
- <div class="card">
-  <div class="section-title"><h2>Packlisten</h2><span class="pill">Getrennt</span></div>
-  <div class="tabs">
-   <button class="active" data-pack="vater">Vater</button>
-   <button data-pack="sohn">Sohn</button>
-   <button data-pack="camper">Camper</button>
-  </div>
-  <div id="pack-vater" class="pack-pane">
-   <label class="check"><input type="checkbox" data-save id="pv1"><span>Kleidung und Wanderschuhe</span></label>
-   <label class="check"><input type="checkbox" data-save id="pv2"><span>Führerschein, Karten, Versicherung</span></label>
-   <label class="check"><input type="checkbox" data-save id="pv3"><span>Handy, Ladegerät, Powerbank</span></label>
-  </div>
-  <div id="pack-sohn" class="pack-pane" hidden>
-   <label class="check"><input type="checkbox" data-save id="ps1"><span>Kleidung, Badesachen, Schuhe</span></label>
-   <label class="check"><input type="checkbox" data-save id="ps2"><span>Kopfhörer, Spiele, Buch</span></label>
-   <label class="check"><input type="checkbox" data-save id="ps3"><span>Helm, Handschuhe, Trinkflasche</span></label>
-  </div>
-  <div id="pack-camper" class="pack-pane" hidden>
-   <label class="check"><input type="checkbox" data-save id="pc1"><span>CEE-Adapter, Kabel, Mehrfachstecker</span></label>
-   <label class="check"><input type="checkbox" data-save id="pc2"><span>Werkzeug, Pumpe, Ersatzschläuche</span></label>
-   <label class="check"><input type="checkbox" data-save id="pc3"><span>Erste Hilfe, Mückenschutz, Sonnencreme</span></label>
-   <label class="check"><input type="checkbox" data-save id="pc4"><span>Kocher, Gas, Wasser, Küchenzeug</span></label>
-  </div>
-  <textarea data-save id="customPack" placeholder="Eigene Ergänzungen"></textarea>
- </div>
-</section>
-
-<section id="tagebuch" class="page">
- <div class="card">
-  <div class="section-title"><h2>Reisetagebuch</h2><span class="pill">Mit Fotos</span></div>
-  <input type="date" id="journalDate">
-  <textarea id="journalText" placeholder="Was war heute besonders?"></textarea>
-  <input type="file" id="journalPhotos" accept="image/*" multiple>
-  <div class="photo-preview" id="photoPreview"></div>
-  <button class="btn orange" id="saveJournal" style="margin-top:10px">Eintrag speichern</button>
- </div>
- <div class="card">
-  <div class="section-title"><h2>Gespeicherte Einträge</h2><span class="small" id="journalCount">0 Einträge</span></div>
-  <div id="journalList"></div>
- </div>
-</section>
-
-<section id="budget" class="page">
- <div class="card">
-  <div class="section-title"><h2>Reisebudget</h2><span class="pill">Euro</span></div>
-  <div class="money"><label>Diesel</label><input type="number" inputmode="decimal" data-money id="m1" value="250"></div>
-  <div class="money"><label>Maut & Vignetten</label><input type="number" inputmode="decimal" data-money id="m2" value="80"></div>
-  <div class="money"><label>Camping</label><input type="number" inputmode="decimal" data-money id="m3" value="600"></div>
-  <div class="money"><label>Essen</label><input type="number" inputmode="decimal" data-money id="m4" value="350"></div>
-  <div class="money"><label>Aktivitäten</label><input type="number" inputmode="decimal" data-money id="m5" value="250"></div>
-  <div class="money"><label>Reserve</label><input type="number" inputmode="decimal" data-money id="m6" value="150"></div>
-  <div class="total">Gesamt: <span id="total">0,00 €</span></div>
- </div>
- <div class="card">
-  <div class="section-title"><h2>Datensicherung</h2><span class="small">Ohne Fotos</span></div>
-  <div class="toolbar"><button class="btn alt" id="exportBtn">⬇ Exportieren</button><label class="btn" for="importFile">⬆ Importieren</label><input id="importFile" type="file" accept="application/json" hidden></div>
- </div>
- <div class="card"><button class="btn danger" id="reset">Alle Eingaben löschen</button></div>
+<section class="page" id="more">
+  <div class="section-head"><div><span class="eyebrow">DATEN & NOTIZEN</span><h2>Mehr</h2></div></div>
+  <article class="card">
+    <h2>Gesprächsleitfaden</h2>
+    <ol class="script">
+      <li>Stellplatz für VW California, zwei Personen.</li>
+      <li>Gewünschter Zeitraum nennen, aber Flexibilität betonen.</li>
+      <li>Fragen, ob spontane Anreise oder Warteliste möglich ist.</li>
+      <li>Strom, Sanitäreinrichtungen und Fahrradabstellung klären.</li>
+      <li>Gesamtpreis und Stornierungsbedingungen notieren.</li>
+    </ol>
+  </article>
+  <article class="card">
+    <h2>Datensicherung</h2>
+    <p class="muted">Status, Notizen und eigene Plätze werden nur auf diesem Gerät gespeichert.</p>
+    <div class="two">
+      <button class="secondary" id="exportBtn">Exportieren</button>
+      <label class="primary file-label">Importieren<input type="file" id="importFile" accept=".json"></label>
+    </div>
+    <button class="danger" id="resetBtn">Alle lokalen Eingaben löschen</button>
+  </article>
+  <article class="card source-note">
+    <h2>Hinweis zu Kontaktdaten</h2>
+    <p>Telefonnummern und Verfügbarkeiten können sich ändern. Prüfe vor dem Anruf im Zweifel die verlinkte offizielle Website. Plätze ohne verifizierte Nummer sind mit „Telefon ergänzen“ markiert.</p>
+  </article>
 </section>
 </main>
 </div>
 
-<nav class="nav">
- <button class="active" data-tab="start"><span>🏠</span>Start</button>
- <button data-tab="orte"><span>🗺️</span>Orte</button>
- <button data-tab="camping"><span>⛺</span>Camping</button>
- <button data-tab="plan"><span>🗓️</span>Plan</button>
- <button data-tab="listen"><span>✅</span>Listen</button>
- <button data-tab="tagebuch"><span>📸</span>Tagebuch</button>
+<nav>
+<button class="active" data-page="home"><span>⌂</span>Home</button>
+<button data-page="camping"><span>⌕</span>Camping</button>
+<button data-page="roadbook"><span>▤</span>Roadbook</button>
+<button data-page="more"><span>•••</span>Mehr</button>
 </nav>
-<div class="toast" id="toast">Gespeichert</div>
 
-<script>
-const KEY="father-son-roadbook-v13";
-let data={};
-try{data=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){data={}}
+<dialog id="campDialog">
+<form method="dialog" id="campForm">
+  <div class="dialog-head"><h2>Campingplatz</h2><button value="cancel">×</button></div>
+  <input type="hidden" id="editId">
+  <label>Name<input id="fName" required></label>
+  <label>Region<select id="fRegion"><option>Soča-Tal</option><option>Istrien</option></select></label>
+  <label>Ort<input id="fPlace"></label>
+  <label>Telefon<input id="fPhone" type="tel"></label>
+  <label>Website<input id="fWebsite" type="url"></label>
+  <label>Notiz<textarea id="fNote"></textarea></label>
+  <button class="primary" value="default" id="saveCamp">Speichern</button>
+</form>
+</dialog>
 
-function toast(text="Gespeichert"){
- const t=document.getElementById("toast");t.textContent=text;t.classList.add("show");
- clearTimeout(window.__t);window.__t=setTimeout(()=>t.classList.remove("show"),850);
-}
-function save(){localStorage.setItem(KEY,JSON.stringify(data));update();toast()}
-document.querySelectorAll("[data-save]").forEach(el=>{
- if(data[el.id]!==undefined){el.type==="checkbox"?el.checked=!!data[el.id]:el.value=data[el.id]}
- el.addEventListener("input",()=>{data[el.id]=el.type==="checkbox"?el.checked:el.value;save()})
-})
-document.querySelectorAll("[data-money]").forEach(el=>{
- if(data[el.id]!==undefined)el.value=data[el.id];
- el.addEventListener("input",()=>{data[el.id]=el.value;save()})
-})
-document.querySelectorAll(".nav button").forEach(btn=>btn.addEventListener("click",()=>{
- document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));
- document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
- btn.classList.add("active");document.getElementById(btn.dataset.tab).classList.add("active");scrollTo({top:0,behavior:"smooth"})
-}))
-document.querySelectorAll("[data-pack]").forEach(btn=>btn.addEventListener("click",()=>{
- document.querySelectorAll("[data-pack]").forEach(b=>b.classList.remove("active"));
- document.querySelectorAll(".pack-pane").forEach(p=>p.hidden=true);
- btn.classList.add("active");document.getElementById("pack-"+btn.dataset.pack).hidden=false
-}))
-function update(){
- const checks=[...document.querySelectorAll('input[type=checkbox][data-save]')],done=checks.filter(x=>x.checked).length,pct=checks.length?Math.round(done/checks.length*100):0;
- document.getElementById("pct").textContent=pct+"%";document.getElementById("done").textContent=done;
- document.getElementById("ratio").textContent=done+" von "+checks.length+" Punkten";
- document.getElementById("bar").style.width=pct+"%";
- document.getElementById("statusText").textContent=pct<35?"Startklar machen":pct<75?"Gut unterwegs":pct<100?"Fast bereit":"Abfahrbereit";
- let sum=0;document.querySelectorAll("[data-money]").forEach(e=>sum+=Number(e.value)||0);
- document.getElementById("total").textContent=sum.toLocaleString("de-DE",{style:"currency",currency:"EUR"})
-}
-function countdown(){
- const d=Math.ceil((new Date("2026-08-08T08:00:00")-new Date())/86400000);
- document.getElementById("countdown").textContent=d>0?d+" Tage":"Los geht’s!"
-}
-document.getElementById("exportBtn").addEventListener("click",()=>{
- const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");
- a.href=url;a.download="roadbook-sicherung.json";a.click();setTimeout(()=>URL.revokeObjectURL(url),500);toast("Sicherung erstellt")
-})
-document.getElementById("importFile").addEventListener("change",async e=>{
- const f=e.target.files[0];if(!f)return;
- try{localStorage.setItem(KEY,JSON.stringify(JSON.parse(await f.text())));toast("Importiert");setTimeout(()=>location.reload(),600)}
- catch(err){alert("Die Sicherungsdatei konnte nicht gelesen werden.")}
-})
-document.getElementById("reset").addEventListener("click",()=>{
- if(confirm("Alle Eingaben auf diesem Gerät wirklich löschen?")){localStorage.removeItem(KEY);localStorage.removeItem(KEY+"-journal");location.reload()}
-})
-let pendingPhotos=[];
-document.getElementById("journalPhotos").addEventListener("change",async e=>{
- pendingPhotos=[];
- for(const file of [...e.target.files].slice(0,6)){pendingPhotos.push(await compressImage(file,900,.72))}
- renderPreview()
-})
-function compressImage(file,max,quality){
- return new Promise(resolve=>{
-  const r=new FileReader();r.onload=()=>{const img=new Image();img.onload=()=>{
-   let w=img.width,h=img.height;if(w>h&&w>max){h*=max/w;w=max}else if(h>max){w*=max/h;h=max}
-   const c=document.createElement("canvas");c.width=w;c.height=h;c.getContext("2d").drawImage(img,0,0,w,h);
-   resolve(c.toDataURL("image/jpeg",quality))
-  };img.src=r.result};r.readAsDataURL(file)
- })
-}
-function renderPreview(){document.getElementById("photoPreview").innerHTML=pendingPhotos.map(x=>`<img src="${x}">`).join("")}
-function getJournal(){try{return JSON.parse(localStorage.getItem(KEY+"-journal")||"[]")}catch(e){return[]}}
-function setJournal(v){localStorage.setItem(KEY+"-journal",JSON.stringify(v))}
-document.getElementById("saveJournal").addEventListener("click",()=>{
- const date=document.getElementById("journalDate").value||new Date().toISOString().slice(0,10);
- const text=document.getElementById("journalText").value.trim();
- if(!text&&!pendingPhotos.length){alert("Bitte Text oder mindestens ein Foto hinzufügen.");return}
- const j=getJournal();j.unshift({id:Date.now(),date,text,photos:pendingPhotos});setJournal(j);
- document.getElementById("journalText").value="";document.getElementById("journalPhotos").value="";pendingPhotos=[];renderPreview();renderJournal();toast("Tagebuch gespeichert")
-})
-function renderJournal(){
- const j=getJournal();document.getElementById("journalCount").textContent=j.length+" Einträge";
- document.getElementById("journalList").innerHTML=j.length?j.map(e=>`<div class="journal-entry"><div class="row"><strong>${new Date(e.date+"T12:00:00").toLocaleDateString("de-DE")}</strong><button class="btn danger" style="padding:7px 10px" onclick="deleteJournal(${e.id})">Löschen</button></div><p>${escapeHtml(e.text||"")}</p><div class="photo-preview">${(e.photos||[]).map(p=>`<img src="${p}">`).join("")}</div></div>`).join(""):'<p class="small">Noch keine Einträge gespeichert.</p>'
-}
-function deleteJournal(id){if(confirm("Eintrag löschen?")){setJournal(getJournal().filter(x=>x.id!==id));renderJournal()}}
-function escapeHtml(s){return s.replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
-document.getElementById("journalDate").value=new Date().toISOString().slice(0,10);
-update();countdown();renderJournal();
-</script>
+<div class="toast" id="toast"></div>
+<script src="js/app.js"></script>
 </body>
 </html>
