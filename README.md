@@ -33,3 +33,8 @@ Lade **den Inhalt dieses Ordners** hoch, nicht den übergeordneten Ordner `roadb
 ## Daten
 
 Status, Notizen, Preise und eigene Campingplätze werden im Browser gespeichert. Über `Mehr` können die Daten exportiert und importiert werden.
+
+
+## Version 4.1
+
+Camping-Schnellmodus ohne Preis und Rückrufdatum. Neu: Priorität A/B/C, große Ergebnisbuttons, automatische Anrufreihenfolge und Fortschrittsanzeige.

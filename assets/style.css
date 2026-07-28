@@ -115,3 +115,50 @@ dialog label{display:block;font-size:12px;font-weight:800;margin:10px 0}
   body{padding:24px}
   .app-shell{border-radius:34px;overflow:hidden;box-shadow:0 30px 90px rgba(0,0,0,.18)}
 }
+
+
+/* Camping-Leitstelle 4.1 */
+.call-cockpit{
+  background:linear-gradient(145deg,var(--surface),var(--sand));
+  border:1px solid var(--line);border-radius:28px;padding:18px;margin-bottom:13px;
+  box-shadow:var(--shadow)
+}
+.cockpit-head{display:flex;justify-content:space-between;gap:14px;align-items:flex-start}
+.cockpit-head h2{font-size:27px;line-height:1.05;margin:9px 0 4px}
+.cockpit-head p{margin:0;color:var(--muted)}
+.priority,.priority-mini{display:inline-flex;align-items:center;justify-content:center;font-weight:900;border-radius:999px}
+.priority{font-size:11px;padding:6px 10px;margin-top:8px}
+.priority-mini{min-width:25px;height:25px;font-size:12px;margin-left:6px}
+.priority-a{background:#d8eadc;color:#1f6a42}
+.priority-b{background:#f4e4ad;color:#7e5a00}
+.priority-c{background:#dfe5eb;color:#52606b}
+.camp-number{flex:0 0 58px;width:58px;height:58px;border-radius:18px;background:var(--brand);color:white;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:22px;font-weight:900}
+.camp-number small{font-size:9px;opacity:.72}
+.cockpit-rating{display:grid;gap:5px;margin:16px 0;font-size:12px;color:var(--muted)}
+.cockpit-links{display:grid;grid-template-columns:2fr 1fr 1fr;gap:7px;margin:14px 0}
+.cockpit-links a,.cockpit-links button{border:0;border-radius:14px;padding:13px 7px;text-decoration:none;text-align:center;font-weight:900;background:var(--mint);color:var(--ink)}
+.cockpit-links .cockpit-call{background:var(--brand);color:white}
+.cockpit-links .missing{background:var(--orange)}
+.quick-note-label{display:block;font-size:12px;font-weight:900}
+.quick-note-label textarea{min-height:74px;margin-top:7px}
+.result-title{font-size:12px;font-weight:900;letter-spacing:.08em;margin:16px 0 8px}
+.result-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.result{border:0;border-radius:15px;padding:13px 8px;font-weight:900;color:var(--ink)}
+.result.reserved{background:#cfe7d6;color:#1e643d}
+.result.full{background:#ecd4d2;color:#8e3431}
+.result.callback{background:#f5e2a8;color:#765500}
+.result.wait{background:#dbe4ef;color:#365b79}
+.result.noanswer{background:#e6e6e1;color:#59615d}
+.result.skip{background:var(--surface-2);color:var(--muted);border:1px dashed var(--line)}
+.cockpit-empty{text-align:center;padding:26px 10px}
+.success-mark{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;margin:auto;background:#d4e9da;color:#176138;font-size:30px;font-weight:900}
+.list-heading{margin:20px 3px 10px}
+.list-heading h3{margin:4px 0;font-size:21px}
+.camp-label-row{display:flex;align-items:center}
+.saved-note{background:var(--surface-2);padding:9px 10px;border-radius:12px;font-size:12px;color:var(--muted)}
+.camp-card.compact textarea{min-height:58px}
+.compact-actions{margin-top:10px}
+@media(max-width:420px){
+  .cockpit-links{grid-template-columns:1fr 1fr}
+  .cockpit-links .cockpit-call{grid-column:1/-1}
+}

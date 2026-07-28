@@ -88,14 +88,14 @@
         <div class="section-title">
           <div>
             <span class="eyebrow">CAMPING-LEITSTELLE</span>
-            <h2>Plätze abtelefonieren</h2>
+            <h2>Ein Platz nach dem anderen</h2>
           </div>
           <button id="addCampBtn" class="round-btn strong" aria-label="Campingplatz hinzufügen">＋</button>
         </div>
 
         <div id="campSummary" class="summary-grid"></div>
 
-        <button id="nextOpenBtn" class="call-next">☎ Nächsten offenen Platz anzeigen</button>
+        <article id="callCockpit" class="call-cockpit"></article>
 
         <div class="toolbar">
           <div class="segment" id="regionFilter">
@@ -114,6 +114,12 @@
           </select>
         </div>
 
+        <div class="list-heading">
+          <div>
+            <span class="eyebrow">ÜBERSICHT</span>
+            <h3>Alle Campingplätze</h3>
+          </div>
+        </div>
         <div id="campList" class="camp-list"></div>
       </section>
 
@@ -189,6 +195,7 @@
       <label>Name<input id="campName" required></label>
       <label>Region<select id="campRegion"><option>Soča-Tal</option><option>Istrien</option></select></label>
       <label>Ort<input id="campPlace"></label>
+      <label>Priorität<select id="campPriority"><option value="A">A – zuerst anrufen</option><option value="B">B – gute Alternative</option><option value="C">C – Reserve</option></select></label>
       <label>Telefon<input id="campPhone" type="tel"></label>
       <label>Website<input id="campWebsite" type="url"></label>
       <label>Notiz<textarea id="campNote"></textarea></label>
