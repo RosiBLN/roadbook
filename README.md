@@ -38,3 +38,13 @@ Status, Notizen, Preise und eigene Campingplätze werden im Browser gespeichert.
 ## Version 4.1
 
 Camping-Schnellmodus ohne Preis und Rückrufdatum. Neu: Priorität A/B/C, große Ergebnisbuttons, automatische Anrufreihenfolge und Fortschrittsanzeige.
+
+
+## Version 4.2 – Rückrufrunde
+
+Die Telefon-Warteschlange arbeitet nun in zwei Phasen:
+
+1. Zuerst erscheinen alle Campingplätze mit „Noch anrufen“.
+2. „Nicht erreicht“ und „Erneut anrufen“ wandern ans Ende.
+3. Sobald alle Erstanrufe erledigt sind, startet automatisch die Rückrufrunde.
+4. Reserviert, Ausgebucht und Warteliste gelten als abgeschlossen.

@@ -78,9 +78,22 @@
     return "★".repeat(n) + "☆".repeat(5 - n);
   }
 
-  function sortedOpenCamps(includeSkipped = false) {
+  function isFresh(camp) {
+    return campState(camp.id).status === "offen";
+  }
+
+  function isRetry(camp) {
+    const status = campState(camp.id).status;
+    return status === "keine-antwort" || status === "rueckruf";
+  }
+
+  function isActive(camp) {
+    return isFresh(camp) || isRetry(camp);
+  }
+
+  function sortedFreshCamps(includeSkipped = false) {
     return camps
-      .filter(c => campState(c.id).status === "offen")
+      .filter(isFresh)
       .filter(c => includeSkipped || !skippedThisSession.has(c.id))
       .sort((a, b) =>
         priorityRank(b) - priorityRank(a) ||
@@ -89,43 +102,75 @@
       );
   }
 
-  function getCurrentCamp() {
-    const current = camps.find(c => c.id === currentCampId && campState(c.id).status === "offen");
-    if (current && !skippedThisSession.has(current.id)) return current;
+  function sortedRetryCamps(includeSkipped = false) {
+    return camps
+      .filter(isRetry)
+      .filter(c => includeSkipped || !skippedThisSession.has(c.id))
+      .sort((a, b) => {
+        const aTime = Date.parse(campState(a.id).calledAt || 0) || 0;
+        const bTime = Date.parse(campState(b.id).calledAt || 0) || 0;
+        return aTime - bTime ||
+          priorityRank(b) - priorityRank(a) ||
+          a.name.localeCompare(b.name, "de");
+      });
+  }
 
-    let next = sortedOpenCamps(false)[0];
-    if (!next && sortedOpenCamps(true).length) {
+  function currentPhase() {
+    return camps.some(isFresh) ? "fresh" : (camps.some(isRetry) ? "retry" : "done");
+  }
+
+  function phaseQueue(includeSkipped = false) {
+    return currentPhase() === "fresh"
+      ? sortedFreshCamps(includeSkipped)
+      : sortedRetryCamps(includeSkipped);
+  }
+
+  function getCurrentCamp() {
+    const phase = currentPhase();
+    const current = camps.find(c => c.id === currentCampId && isActive(c));
+    if (current) {
+      const currentIsCorrectPhase =
+        (phase === "fresh" && isFresh(current)) ||
+        (phase === "retry" && isRetry(current));
+      if (currentIsCorrectPhase && !skippedThisSession.has(current.id)) return current;
+    }
+
+    let next = phaseQueue(false)[0];
+    if (!next && phaseQueue(true).length) {
       skippedThisSession.clear();
-      next = sortedOpenCamps(false)[0];
+      next = phaseQueue(false)[0];
     }
     currentCampId = next?.id || null;
     return next || null;
   }
 
   function renderSummary() {
-    const statuses = camps.map(c => campState(c.id).status);
-    const open = statuses.filter(s => s === "offen").length;
-    const follow = statuses.filter(s => s === "rueckruf" || s === "warteliste").length;
-    const reserved = statuses.filter(s => s === "reserviert").length;
-    const done = statuses.filter(s => s !== "offen").length;
+    const fresh = camps.filter(isFresh).length;
+    const retry = camps.filter(isRetry).length;
+    const reserved = camps.filter(c => campState(c.id).status === "reserviert").length;
+    const terminal = camps.filter(c => {
+      const s = campState(c.id).status;
+      return s === "reserviert" || s === "ausgebucht" || s === "warteliste";
+    }).length;
+    const contacted = camps.length - fresh;
     const total = camps.length;
-    const openA = camps.filter(c => campState(c.id).status === "offen" && priorityLetter(c) === "A").length;
 
     document.getElementById("campSummary").innerHTML = `
-      <div class="summary-card"><strong>${done}/${total}</strong><span>ERLEDIGT</span></div>
-      <div class="summary-card"><strong>${openA}</strong><span>PRIORITÄT A OFFEN</span></div>
+      <div class="summary-card"><strong>${fresh}</strong><span>NEUE ANRUFE</span></div>
+      <div class="summary-card"><strong>${retry}</strong><span>RÜCKRUFE</span></div>
       <div class="summary-card"><strong>${reserved}</strong><span>RESERVIERT</span></div>
     `;
 
-    document.getElementById("openCount").textContent = open;
+    document.getElementById("openCount").textContent = fresh + retry;
     document.getElementById("reservedCount").textContent = reserved;
-    document.getElementById("callProgress").textContent = `${done} / ${total}`;
-    document.getElementById("progressBar").style.width = total ? `${done / total * 100}%` : "0%";
+    document.getElementById("callProgress").textContent = `${contacted} / ${total}`;
+    document.getElementById("progressBar").style.width = total ? `${contacted / total * 100}%` : "0%";
 
     const next = getCurrentCamp();
+    const phase = currentPhase();
     document.getElementById("nextCampName").textContent = next ? next.name : "Alle Plätze bearbeitet";
     document.getElementById("nextCampMeta").textContent = next
-      ? `${next.region} · ${next.place} · Priorität ${priorityLetter(next)}`
+      ? `${phase === "fresh" ? "Erstanruf" : "Rückrufrunde"} · ${next.region} · ${next.place} · Priorität ${priorityLetter(next)}`
       : "Es gibt aktuell keinen offenen Eintrag.";
   }
 
@@ -144,6 +189,13 @@
     }
 
     const s = campState(camp.id);
+    const phase = currentPhase();
+    const queue = phaseQueue(true);
+    const queueIndex = Math.max(0, queue.findIndex(c => c.id === camp.id));
+    const phaseLabel = phase === "fresh" ? "NÄCHSTER ERSTANRUF" : "RÜCKRUFRUNDE";
+    const phaseHint = phase === "fresh"
+      ? "Zuerst werden alle noch unversuchten Plätze angerufen."
+      : "Jetzt erscheinen die nicht erreichten Plätze erneut.";
     const phoneAction = camp.phone
       ? `<a class="cockpit-call" href="tel:${escapeHtml(camp.phone)}">☎ Jetzt anrufen</a>`
       : `<button class="cockpit-call missing" data-edit="${escapeHtml(camp.id)}">☎ Telefonnummer ergänzen</button>`;
@@ -151,13 +203,15 @@
     cockpit.innerHTML = `
       <div class="cockpit-head">
         <div>
-          <span class="eyebrow">NÄCHSTER CAMPINGPLATZ</span>
+          <span class="eyebrow">${phaseLabel}</span>
           <div class="priority priority-${priorityLetter(camp).toLowerCase()}">Priorität ${priorityLetter(camp)}</div>
           <h2>${escapeHtml(camp.name)}</h2>
           <p>${escapeHtml(camp.place)} · ${escapeHtml(camp.region)}</p>
         </div>
-        <div class="camp-number">${camps.filter(c => campState(c.id).status !== "offen").length + 1}<small>von ${camps.length}</small></div>
+        <div class="camp-number">${queueIndex + 1}<small>von ${queue.length}</small></div>
       </div>
+
+      <p class="phase-hint">${phaseHint}</p>
 
       <div class="cockpit-rating">
         <span>🚴 ${stars(camp.bike)}</span>
@@ -181,9 +235,9 @@
       <div class="result-grid">
         <button class="result reserved" data-result="reserviert">✓ Reserviert</button>
         <button class="result full" data-result="ausgebucht">× Ausgebucht</button>
-        <button class="result callback" data-result="rueckruf">↻ Rückruf</button>
+        <button class="result callback" data-result="rueckruf">↻ Erneut anrufen</button>
         <button class="result wait" data-result="warteliste">≋ Warteliste</button>
-        <button class="result noanswer" data-result="keine-antwort">… Keine Antwort</button>
+        <button class="result noanswer" data-result="keine-antwort">… Nicht erreicht</button>
         <button class="result skip" id="skipCamp">→ Später</button>
       </div>
     `;
@@ -195,13 +249,15 @@
     cockpit.querySelectorAll("[data-result]").forEach(btn => {
       btn.addEventListener("click", () => {
         const note = document.getElementById("quickNote")?.value || "";
-        const label = statusNames[btn.dataset.result];
-        state[camp.id] = { ...campState(camp.id), status:btn.dataset.result, notes:note, calledAt:new Date().toISOString() };
+        const result = btn.dataset.result;
+        const label = statusNames[result];
+        state[camp.id] = { ...campState(camp.id), status:result, notes:note, calledAt:new Date().toISOString() };
         localStorage.setItem(KEY, JSON.stringify(state));
         currentCampId = null;
         skippedThisSession.delete(camp.id);
         render();
-        toast(`${label} – nächster Platz`);
+        const remainsActive = result === "keine-antwort" || result === "rueckruf";
+        toast(remainsActive ? `${label} – kommt später wieder` : `${label} – nächster Platz`);
       });
     });
 
@@ -272,7 +328,7 @@
           <textarea data-notes="${escapeHtml(c.id)}" placeholder="Kurze Notiz">${escapeHtml(s.notes)}</textarea>
 
           <div class="card-actions">
-            ${s.status === "offen" ? `<button data-focus="${escapeHtml(c.id)}">Als Nächstes</button>` : ""}
+            ${isActive(c) ? `<button data-focus="${escapeHtml(c.id)}">Als Nächstes</button>` : ""}
             <button data-edit="${escapeHtml(c.id)}">Bearbeiten</button>
             ${c.custom ? `<button data-delete="${escapeHtml(c.id)}">Löschen</button>` : ""}
           </div>

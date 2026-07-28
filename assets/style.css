@@ -162,3 +162,15 @@ dialog label{display:block;font-size:12px;font-weight:800;margin:10px 0}
   .cockpit-links{grid-template-columns:1fr 1fr}
   .cockpit-links .cockpit-call{grid-column:1/-1}
 }
+
+
+/* Telefon-Warteschlange 4.2 */
+.phase-hint{
+  margin:12px 0 0;
+  padding:9px 11px;
+  border-radius:12px;
+  background:var(--surface-2);
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.4
+}
