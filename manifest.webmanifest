@@ -1,0 +1,9 @@
+{
+  "name": "Roadbook 4.0 – Elias & Papa",
+  "short_name": "Roadbook",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#edf2ef",
+  "theme_color": "#163c32",
+  "description": "Camping-Leitstelle und Roadbook für die Vater-Sohn-Reise"
+}

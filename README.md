@@ -1,26 +1,35 @@
-# Roadbook 3.0
+# Roadbook 4.0
 
-Mobile GitHub-Pages-App für die Vater-Sohn-Reise von Elias und Papa.
+Diese Version ist für GitHub Pages vorbereitet.
 
-## Installation auf GitHub Pages
+## Ordnerstruktur
 
-1. Den Inhalt dieses Ordners in das Repository `Roadbook` hochladen.
-2. `index.html` muss im Hauptverzeichnis liegen.
-3. GitHub: Settings → Pages → Deploy from a branch → `main` / `/root`.
-4. Die Seite neu laden.
+```text
+Roadbook/
+├── index.html
+├── manifest.webmanifest
+├── service-worker.js
+└── assets/
+    ├── style.css
+    ├── app.js
+    └── campsites.js
+```
 
-## Camping-Leitstelle
+## Wichtig beim Hochladen
 
-- Status pro Campingplatz
-- Direktwahl bei hinterlegter Nummer
-- Rückrufdatum
-- Preis und Gesprächsnotizen
-- Filter nach Region und Status
-- Eigene Plätze ergänzen
-- JSON-Export und -Import
+Lade **den Inhalt dieses Ordners** hoch, nicht den übergeordneten Ordner `roadbook-v4`.
 
-Die Eingaben werden im Browser über localStorage gespeichert. Fotos sind in dieser Version bewusst nicht enthalten, damit die Camping-Leitstelle stabil und schnell bleibt.
+`index.html`, `manifest.webmanifest`, `service-worker.js` und der Ordner `assets` müssen direkt im Hauptverzeichnis des Repositorys liegen.
 
-## Datenhinweis
+## GitHub Pages
 
-Telefonnummern und Webseiten sollten vor Nutzung nochmals auf der offiziellen Website geprüft werden. Einige Plätze sind absichtlich mit „Telefon ergänzen“ markiert, wenn bei der Erstellung keine Telefonnummer sicher verifiziert wurde.
+1. Repository öffnen.
+2. `Settings` → `Pages`.
+3. Quelle: `Deploy from a branch`.
+4. Branch: `main`, Ordner: `/root`.
+5. Speichern.
+6. Danach ein bis zwei Minuten warten.
+
+## Daten
+
+Status, Notizen, Preise und eigene Campingplätze werden im Browser gespeichert. Über `Mehr` können die Daten exportiert und importiert werden.

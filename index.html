@@ -1,134 +1,204 @@
 <!doctype html>
 <html lang="de">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#143d34">
-<title>Roadbook 3.0 – Elias & Papa</title>
-<link rel="stylesheet" href="css/style.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#163c32">
+  <meta name="description" content="Roadbook für die Vater-Sohn-Reise von Elias und Papa">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="assets/style.css">
+  <title>Roadbook 4.0 – Elias & Papa</title>
 </head>
 <body>
-<div class="app">
-<header class="hero">
-  <div class="kicker">ROADBOOK 3.0</div>
-  <h1>Father & Son<br>Adventure</h1>
-  <p>Elias & Papa · 08.–15. August 2026</p>
-  <div class="hero-stats">
-    <div><strong id="countdown">–</strong><span>bis zum Start</span></div>
-    <div><strong id="openHero">–</strong><span>Plätze offen</span></div>
+  <div class="app-shell">
+    <header class="hero">
+      <div class="hero__overlay"></div>
+      <div class="hero__content">
+        <div class="topline">
+          <span class="brand">ROADBOOK 4.0</span>
+          <button id="themeToggle" class="round-btn" aria-label="Darstellung wechseln">◐</button>
+        </div>
+        <p class="eyebrow">FATHER & SON ADVENTURE</p>
+        <h1>Elias & Papa</h1>
+        <p class="hero__sub">08.–15. August 2026 · Kärnten · Soča · Istrien</p>
+        <div class="hero__metrics">
+          <div><strong id="countdown">–</strong><span>bis zum Start</span></div>
+          <div><strong id="openCount">–</strong><span>noch anzurufen</span></div>
+          <div><strong id="reservedCount">–</strong><span>reserviert</span></div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section id="home" class="page active">
+        <article class="feature-card warm">
+          <div>
+            <span class="eyebrow">NÄCHSTER SCHRITT</span>
+            <h2 id="nextCampName">Campingplatz auswählen</h2>
+            <p id="nextCampMeta">Die Leitstelle sortiert offene Plätze nach Priorität.</p>
+          </div>
+          <button class="primary" data-go="camping">Camping-Leitstelle öffnen</button>
+        </article>
+
+        <div class="stat-grid">
+          <article class="stat-card">
+            <span>Anruf-Fortschritt</span>
+            <strong id="callProgress">0 / 0</strong>
+            <div class="progress"><i id="progressBar"></i></div>
+          </article>
+          <article class="stat-card">
+            <span>Reisebudget</span>
+            <strong>1.500–1.800 €</strong>
+            <small>Planungsrahmen</small>
+          </article>
+        </div>
+
+        <article class="panel">
+          <div class="panel__head">
+            <div>
+              <span class="eyebrow">REISEPLAN</span>
+              <h2>Flexible Route</h2>
+            </div>
+          </div>
+          <div class="route">
+            <div class="route__item"><b>08.08.</b><span>Hotel Glocknerhof → Soča-Tal</span></div>
+            <div class="route__item"><b>09.–10.08.</b><span>Radfahren, Baden, Rafting oder Canyoning</span></div>
+            <div class="route__item"><b>11.–14.08.</b><span>Istrien, Rovinj und Kap Kamenjak</span></div>
+            <div class="route__item"><b>15.08.</b><span>Ankunft in Berlin</span></div>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel__head">
+            <div>
+              <span class="eyebrow">VORBEREITUNG</span>
+              <h2>Checkliste</h2>
+            </div>
+          </div>
+          <div id="prepChecklist" class="checklist">
+            <label><input type="checkbox" data-persist="prep-bike"><span>Fahrräder und Fahrradträger prüfen</span></label>
+            <label><input type="checkbox" data-persist="prep-docs"><span>Ausweise, Versicherungen und Vignetten prüfen</span></label>
+            <label><input type="checkbox" data-persist="prep-camps"><span>Campingplätze systematisch abtelefonieren</span></label>
+            <label><input type="checkbox" data-persist="prep-return"><span>Rückfahrt am 15.08. festlegen</span></label>
+          </div>
+        </article>
+      </section>
+
+      <section id="camping" class="page">
+        <div class="section-title">
+          <div>
+            <span class="eyebrow">CAMPING-LEITSTELLE</span>
+            <h2>Plätze abtelefonieren</h2>
+          </div>
+          <button id="addCampBtn" class="round-btn strong" aria-label="Campingplatz hinzufügen">＋</button>
+        </div>
+
+        <div id="campSummary" class="summary-grid"></div>
+
+        <button id="nextOpenBtn" class="call-next">☎ Nächsten offenen Platz anzeigen</button>
+
+        <div class="toolbar">
+          <div class="segment" id="regionFilter">
+            <button class="active" data-region="Alle">Alle</button>
+            <button data-region="Soča-Tal">Soča</button>
+            <button data-region="Istrien">Istrien</button>
+          </div>
+          <select id="statusFilter" aria-label="Nach Status filtern">
+            <option value="Alle">Alle Status</option>
+            <option value="offen">Noch anrufen</option>
+            <option value="keine-antwort">Keine Antwort</option>
+            <option value="rueckruf">Rückruf</option>
+            <option value="warteliste">Warteliste</option>
+            <option value="reserviert">Reserviert</option>
+            <option value="ausgebucht">Ausgebucht</option>
+          </select>
+        </div>
+
+        <div id="campList" class="camp-list"></div>
+      </section>
+
+      <section id="roadbook" class="page">
+        <div class="section-title">
+          <div>
+            <span class="eyebrow">TAGESPLAN</span>
+            <h2>Roadbook</h2>
+          </div>
+        </div>
+
+        <div class="days">
+          <article class="day-card"><div class="day-date">08<small>AUG</small></div><div><h3>Kärnten → Soča</h3><p>Anreise, Campingplatz beziehen und erster Badestopp.</p></div></article>
+          <article class="day-card"><div class="day-date">09<small>AUG</small></div><div><h3>Kobarid & Kozjak</h3><p>Radtour, Hängebrücke und Wasserfall.</p></div></article>
+          <article class="day-card"><div class="day-date">10<small>AUG</small></div><div><h3>Wasserabenteuer</h3><p>Rafting oder Canyoning; Treffpunkt möglichst per Rad erreichbar.</p></div></article>
+          <article class="day-card"><div class="day-date wide">11–13<small>AUG</small></div><div><h3>Istrien flexibel</h3><p>Rovinj, Küstenradwege, Baden und Kap Kamenjak.</p></div></article>
+          <article class="day-card"><div class="day-date">14<small>AUG</small></div><div><h3>Letzte Übernachtung</h3><p>Camper vorbereiten und Rückfahrt sichern.</p></div></article>
+          <article class="day-card"><div class="day-date">15<small>AUG</small></div><div><h3>Berlin</h3><p>Ankunft und Abschlussfoto.</p></div></article>
+        </div>
+      </section>
+
+      <section id="more" class="page">
+        <div class="section-title">
+          <div>
+            <span class="eyebrow">WERKZEUGE</span>
+            <h2>Mehr</h2>
+          </div>
+        </div>
+
+        <article class="panel">
+          <h2>Gesprächsleitfaden</h2>
+          <ol class="script">
+            <li>VW California, zwei Personen und Reisezeitraum nennen.</li>
+            <li>Flexible An- und Abreise ausdrücklich erwähnen.</li>
+            <li>Nach Warteliste, spontaner Anreise und Rückruf fragen.</li>
+            <li>Strom, Sanitäreinrichtungen und Fahrradabstellung klären.</li>
+            <li>Gesamtpreis und Stornierungsbedingungen notieren.</li>
+          </ol>
+        </article>
+
+        <article class="panel">
+          <h2>Datensicherung</h2>
+          <p class="muted">Status, Notizen und eigene Campingplätze werden auf diesem Gerät gespeichert.</p>
+          <div class="button-grid">
+            <button id="exportBtn" class="secondary">Exportieren</button>
+            <label class="primary file-label">Importieren<input id="importFile" type="file" accept=".json"></label>
+          </div>
+          <button id="resetBtn" class="danger">Lokale Eingaben löschen</button>
+        </article>
+
+        <article class="panel">
+          <h2>Wichtiger Hinweis</h2>
+          <p class="muted">Telefonnummern und Verfügbarkeiten können sich ändern. Prüfe die Kontaktdaten vor dem Anruf auf der verlinkten offiziellen Website.</p>
+        </article>
+      </section>
+    </main>
   </div>
-</header>
 
-<main>
-<section class="page active" id="home">
-  <div class="grid">
-    <article class="card metric"><span>Camping-Anrufe</span><strong id="calledMetric">0 / 0</strong><div class="bar"><i id="callBar"></i></div></article>
-    <article class="card metric"><span>Reservierungen</span><strong id="bookedMetric">0</strong><small>Soča & Istrien</small></article>
-  </div>
-  <article class="card accent">
-    <div class="row"><div><span class="eyebrow">NÄCHSTER SCHRITT</span><h2 id="nextName">Campingplatz auswählen</h2><p id="nextPlace">Die Leitstelle erstellt deine Reihenfolge.</p></div><div class="big-icon">☎️</div></div>
-    <button class="primary" id="homeNext">Zur Camping-Leitstelle</button>
-  </article>
-  <article class="card">
-    <h2>Reisegrundlage</h2>
-    <div class="timeline">
-      <div><b>08.08.</b><span>Start Hotel Glocknerhof, Berg im Drautal</span></div>
-      <div><b>flexibel</b><span>Soča-Tal: Rad, Baden, Rafting/Canyoning</span></div>
-      <div><b>flexibel</b><span>Istrien: Rovinj, Küste und Kap Kamenjak</span></div>
-      <div><b>15.08.</b><span>Wieder in Berlin</span></div>
-    </div>
-  </article>
-  <article class="card">
-    <h2>Vorbereitung</h2>
-    <label class="task"><input type="checkbox" data-save id="prepBike"><span>Fahrräder und Träger prüfen</span></label>
-    <label class="task"><input type="checkbox" data-save id="prepDocs"><span>Ausweise, Versicherungen und Vignetten</span></label>
-    <label class="task"><input type="checkbox" data-save id="prepCamp"><span>Campingplätze systematisch abtelefonieren</span></label>
-    <label class="task"><input type="checkbox" data-save id="prepReturn"><span>Rückfahrt für den 15.08. festlegen</span></label>
-  </article>
-</section>
+  <nav class="bottom-nav">
+    <button class="active" data-page="home"><span>⌂</span>Home</button>
+    <button data-page="camping"><span>☎</span>Camping</button>
+    <button data-page="roadbook"><span>▤</span>Roadbook</button>
+    <button data-page="more"><span>•••</span>Mehr</button>
+  </nav>
 
-<section class="page" id="camping">
-  <div class="section-head"><div><span class="eyebrow">CAMPING-LEITSTELLE</span><h2>Plätze abtelefonieren</h2></div><button class="icon-btn" id="addBtn">＋</button></div>
-  <div class="summary" id="summary"></div>
-  <button class="call-next" id="callNext">☎ Nächsten offenen Platz anzeigen</button>
-  <div class="filters">
-    <button class="active" data-region="Alle">Alle</button>
-    <button data-region="Soča-Tal">Soča</button>
-    <button data-region="Istrien">Istrien</button>
-  </div>
-  <select id="statusFilter">
-    <option value="Alle">Alle Status</option>
-    <option value="offen">Noch anrufen</option>
-    <option value="keine-antwort">Keine Antwort</option>
-    <option value="rueckruf">Rückruf</option>
-    <option value="warteliste">Warteliste</option>
-    <option value="reserviert">Reserviert</option>
-    <option value="ausgebucht">Ausgebucht</option>
-  </select>
-  <div id="campList"></div>
-</section>
+  <dialog id="campDialog">
+    <form id="campForm" method="dialog">
+      <div class="dialog-title">
+        <h2>Campingplatz</h2>
+        <button value="cancel" class="dialog-close" aria-label="Schließen">×</button>
+      </div>
+      <input type="hidden" id="campId">
+      <label>Name<input id="campName" required></label>
+      <label>Region<select id="campRegion"><option>Soča-Tal</option><option>Istrien</option></select></label>
+      <label>Ort<input id="campPlace"></label>
+      <label>Telefon<input id="campPhone" type="tel"></label>
+      <label>Website<input id="campWebsite" type="url"></label>
+      <label>Notiz<textarea id="campNote"></textarea></label>
+      <button id="saveCampBtn" class="primary" value="default">Speichern</button>
+    </form>
+  </dialog>
 
-<section class="page" id="roadbook">
-  <div class="section-head"><div><span class="eyebrow">FLEXIBLER PLAN</span><h2>Roadbook</h2></div></div>
-  <article class="day card"><div class="date">08<small>AUG</small></div><div><h3>Kärnten → Soča-Tal</h3><p>Start am Hotel Glocknerhof. Ankunft und erster Badestopp.</p></div></article>
-  <article class="day card"><div class="date">09<small>AUG</small></div><div><h3>Kobarid & Kozjak</h3><p>Radtour, Hängebrücke, Wasserfall und Soča.</p></div></article>
-  <article class="day card"><div class="date">10<small>AUG</small></div><div><h3>Wasserabenteuer</h3><p>Rafting oder Canyoning; Treffpunkt möglichst per Rad erreichbar.</p></div></article>
-  <article class="day card"><div class="date">11–13<small>AUG</small></div><div><h3>Istrien flexibel</h3><p>Rovinj, Küstenradwege, Baden und Kap Kamenjak.</p></div></article>
-  <article class="day card"><div class="date">14<small>AUG</small></div><div><h3>Letzte Übernachtung</h3><p>Camper vorbereiten und sichere Rückfahrt planen.</p></div></article>
-  <article class="day card"><div class="date">15<small>AUG</small></div><div><h3>Berlin</h3><p>Ankunft, Abschlussfoto und Adventure Pass auswerten.</p></div></article>
-</section>
+  <div id="toast" class="toast" role="status"></div>
 
-<section class="page" id="more">
-  <div class="section-head"><div><span class="eyebrow">DATEN & NOTIZEN</span><h2>Mehr</h2></div></div>
-  <article class="card">
-    <h2>Gesprächsleitfaden</h2>
-    <ol class="script">
-      <li>Stellplatz für VW California, zwei Personen.</li>
-      <li>Gewünschter Zeitraum nennen, aber Flexibilität betonen.</li>
-      <li>Fragen, ob spontane Anreise oder Warteliste möglich ist.</li>
-      <li>Strom, Sanitäreinrichtungen und Fahrradabstellung klären.</li>
-      <li>Gesamtpreis und Stornierungsbedingungen notieren.</li>
-    </ol>
-  </article>
-  <article class="card">
-    <h2>Datensicherung</h2>
-    <p class="muted">Status, Notizen und eigene Plätze werden nur auf diesem Gerät gespeichert.</p>
-    <div class="two">
-      <button class="secondary" id="exportBtn">Exportieren</button>
-      <label class="primary file-label">Importieren<input type="file" id="importFile" accept=".json"></label>
-    </div>
-    <button class="danger" id="resetBtn">Alle lokalen Eingaben löschen</button>
-  </article>
-  <article class="card source-note">
-    <h2>Hinweis zu Kontaktdaten</h2>
-    <p>Telefonnummern und Verfügbarkeiten können sich ändern. Prüfe vor dem Anruf im Zweifel die verlinkte offizielle Website. Plätze ohne verifizierte Nummer sind mit „Telefon ergänzen“ markiert.</p>
-  </article>
-</section>
-</main>
-</div>
-
-<nav>
-<button class="active" data-page="home"><span>⌂</span>Home</button>
-<button data-page="camping"><span>⌕</span>Camping</button>
-<button data-page="roadbook"><span>▤</span>Roadbook</button>
-<button data-page="more"><span>•••</span>Mehr</button>
-</nav>
-
-<dialog id="campDialog">
-<form method="dialog" id="campForm">
-  <div class="dialog-head"><h2>Campingplatz</h2><button value="cancel">×</button></div>
-  <input type="hidden" id="editId">
-  <label>Name<input id="fName" required></label>
-  <label>Region<select id="fRegion"><option>Soča-Tal</option><option>Istrien</option></select></label>
-  <label>Ort<input id="fPlace"></label>
-  <label>Telefon<input id="fPhone" type="tel"></label>
-  <label>Website<input id="fWebsite" type="url"></label>
-  <label>Notiz<textarea id="fNote"></textarea></label>
-  <button class="primary" value="default" id="saveCamp">Speichern</button>
-</form>
-</dialog>
-
-<div class="toast" id="toast"></div>
-<script src="js/app.js"></script>
+  <script src="assets/campsites.js"></script>
+  <script src="assets/app.js"></script>
 </body>
 </html>
