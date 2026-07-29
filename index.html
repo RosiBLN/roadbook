@@ -7,7 +7,7 @@
   <meta name="description" content="Roadbook für die Vater-Sohn-Reise von Elias und Papa">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="stylesheet" href="assets/style.css">
-  <title>Roadbook 4.0 – Elias & Papa</title>
+  <title>Roadbook 4.3 – Elias & Papa</title>
 </head>
 <body>
   <div class="app-shell">
@@ -15,7 +15,7 @@
       <div class="hero__overlay"></div>
       <div class="hero__content">
         <div class="topline">
-          <span class="brand">ROADBOOK 4.0</span>
+          <span class="brand">ROADBOOK 4.3</span>
           <button id="themeToggle" class="round-btn" aria-label="Darstellung wechseln">◐</button>
         </div>
         <p class="eyebrow">FATHER & SON ADVENTURE</p>
@@ -23,7 +23,7 @@
         <p class="hero__sub">08.–15. August 2026 · Kärnten · Soča · Istrien</p>
         <div class="hero__metrics">
           <div><strong id="countdown">–</strong><span>bis zum Start</span></div>
-          <div><strong id="openCount">–</strong><span>noch anzurufen</span></div>
+          <div><strong id="openCount">–</strong><span>offene Kontakte</span></div>
           <div><strong id="reservedCount">–</strong><span>reserviert</span></div>
         </div>
       </div>
@@ -42,8 +42,9 @@
 
         <div class="stat-grid">
           <article class="stat-card">
-            <span>Anruf-Fortschritt</span>
+            <span>Telefonrunde</span>
             <strong id="callProgress">0 / 0</strong>
+            <small id="callBreakdown">0 neu · 0 Rückrufe</small>
             <div class="progress"><i id="progressBar"></i></div>
           </article>
           <article class="stat-card">
@@ -96,6 +97,14 @@
         <div id="campSummary" class="summary-grid"></div>
 
         <article id="callCockpit" class="call-cockpit"></article>
+
+        <div class="assistant-tools">
+          <label class="search-box">
+            <span>⌕</span>
+            <input id="campSearch" type="search" placeholder="Campingplatz oder Ort suchen" autocomplete="off">
+          </label>
+          <button id="favoriteFilter" class="favorite-filter" aria-pressed="false">☆ Nur Favoriten</button>
+        </div>
 
         <div class="toolbar">
           <div class="segment" id="regionFilter">

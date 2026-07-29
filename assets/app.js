@@ -4,523 +4,155 @@
   const KEY = "roadbook-v4-state";
   const CUSTOM_KEY = "roadbook-v4-custom";
   const THEME_KEY = "roadbook-v4-theme";
-
   const baseCamps = Array.isArray(window.ROADBOOK_CAMPSITES) ? window.ROADBOOK_CAMPSITES : [];
-  let customCamps = safeParse(localStorage.getItem(CUSTOM_KEY), []);
-  let state = safeParse(localStorage.getItem(KEY), {});
+  let customCamps = parse(localStorage.getItem(CUSTOM_KEY), []);
+  let state = parse(localStorage.getItem(KEY), {});
   let camps = [...baseCamps, ...customCamps];
   let activeRegion = "Alle";
+  let activeStatus = "Alle";
+  let searchTerm = "";
+  let favoritesOnly = false;
   let currentCampId = null;
-  let skippedThisSession = new Set();
+  let skipped = new Set();
 
-  const statusNames = {
-    offen: "Noch anrufen",
-    "keine-antwort": "Keine Antwort",
-    rueckruf: "Rückruf",
-    warteliste: "Warteliste",
-    reserviert: "Reserviert",
-    ausgebucht: "Ausgebucht"
+  const terminal = new Set(["reserviert", "ausgebucht", "warteliste"]);
+  const labels = {
+    offen: "Noch anrufen", "keine-antwort": "Keine Antwort", rueckruf: "Rückruf",
+    warteliste: "Warteliste", reserviert: "Reserviert", ausgebucht: "Ausgebucht"
   };
 
-  function safeParse(value, fallback) {
-    try { return value ? JSON.parse(value) : fallback; }
-    catch { return fallback; }
+  function parse(v, fallback){ try{return v ? JSON.parse(v) : fallback}catch{return fallback} }
+  function esc(v=""){return String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"})[c])}
+  function cs(id){return state[id] || {status:"offen",notes:"",calledAt:"",favorite:false}}
+  function letter(c){return c.priorityLetter || (Number(c.priority)>=9?"A":Number(c.priority)>=7?"B":"C")}
+  function rank(c){return {A:3,B:2,C:1}[letter(c)]||0}
+  function fresh(c){return cs(c.id).status==="offen"}
+  function retry(c){return ["keine-antwort","rueckruf"].includes(cs(c.id).status)}
+  function active(c){return fresh(c)||retry(c)}
+  function quality(c){
+    const realWebsite = c.website && !/google\.com\/search/i.test(c.website);
+    if(c.phone && realWebsite) return {key:"verified",icon:"●",text:"Geprüft"};
+    if(c.phone || realWebsite) return {key:"partial",icon:"●",text:"Teilweise geprüft"};
+    return {key:"check",icon:"●",text:"Noch prüfen"};
   }
-
-  function escapeHtml(value = "") {
-    return String(value).replace(/[&<>"']/g, c => ({
-      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-    })[c]);
+  function persist(renderNow=true){
+    localStorage.setItem(KEY,JSON.stringify(state));
+    localStorage.setItem(CUSTOM_KEY,JSON.stringify(customCamps));
+    if(renderNow) render();
   }
-
-  function priorityLetter(camp) {
-    if (camp.priorityLetter) return camp.priorityLetter;
-    const score = Number(camp.priority || 0);
-    return score >= 9 ? "A" : score >= 7 ? "B" : "C";
-  }
-
-  function priorityRank(camp) {
-    return { A:3, B:2, C:1 }[priorityLetter(camp)] || 0;
-  }
-
-  function campState(id) {
-    return state[id] || { status:"offen", notes:"", calledAt:"" };
-  }
-
-  function persist() {
-    localStorage.setItem(KEY, JSON.stringify(state));
-    localStorage.setItem(CUSTOM_KEY, JSON.stringify(customCamps));
-    render();
-  }
-
-  function setCampState(id, patch, advance = false) {
-    state[id] = { ...campState(id), ...patch };
-    if (patch.status && patch.status !== "offen" && !state[id].calledAt) {
-      state[id].calledAt = new Date().toISOString();
-    }
-    localStorage.setItem(KEY, JSON.stringify(state));
-    if (advance) {
-      skippedThisSession.delete(id);
-      currentCampId = null;
-    }
-    render();
-  }
-
-  function toast(message) {
-    const el = document.getElementById("toast");
-    el.textContent = message;
-    el.classList.add("show");
-    clearTimeout(toast.timer);
-    toast.timer = setTimeout(() => el.classList.remove("show"), 1200);
-  }
-
-  function stars(n = 3) {
-    return "★".repeat(n) + "☆".repeat(5 - n);
-  }
-
-  function isFresh(camp) {
-    return campState(camp.id).status === "offen";
-  }
-
-  function isRetry(camp) {
-    const status = campState(camp.id).status;
-    return status === "keine-antwort" || status === "rueckruf";
-  }
-
-  function isActive(camp) {
-    return isFresh(camp) || isRetry(camp);
-  }
-
-  function sortedFreshCamps(includeSkipped = false) {
-    return camps
-      .filter(isFresh)
-      .filter(c => includeSkipped || !skippedThisSession.has(c.id))
-      .sort((a, b) =>
-        priorityRank(b) - priorityRank(a) ||
-        (b.priority || 0) - (a.priority || 0) ||
-        a.name.localeCompare(b.name, "de")
-      );
-  }
-
-  function sortedRetryCamps(includeSkipped = false) {
-    return camps
-      .filter(isRetry)
-      .filter(c => includeSkipped || !skippedThisSession.has(c.id))
-      .sort((a, b) => {
-        const aTime = Date.parse(campState(a.id).calledAt || 0) || 0;
-        const bTime = Date.parse(campState(b.id).calledAt || 0) || 0;
-        return aTime - bTime ||
-          priorityRank(b) - priorityRank(a) ||
-          a.name.localeCompare(b.name, "de");
-      });
-  }
-
-  function currentPhase() {
-    return camps.some(isFresh) ? "fresh" : (camps.some(isRetry) ? "retry" : "done");
-  }
-
-  function phaseQueue(includeSkipped = false) {
-    return currentPhase() === "fresh"
-      ? sortedFreshCamps(includeSkipped)
-      : sortedRetryCamps(includeSkipped);
-  }
-
-  function getCurrentCamp() {
-    const phase = currentPhase();
-    const current = camps.find(c => c.id === currentCampId && isActive(c));
-    if (current) {
-      const currentIsCorrectPhase =
-        (phase === "fresh" && isFresh(current)) ||
-        (phase === "retry" && isRetry(current));
-      if (currentIsCorrectPhase && !skippedThisSession.has(current.id)) return current;
-    }
-
-    let next = phaseQueue(false)[0];
-    if (!next && phaseQueue(true).length) {
-      skippedThisSession.clear();
-      next = phaseQueue(false)[0];
-    }
-    currentCampId = next?.id || null;
-    return next || null;
-  }
-
-  function renderSummary() {
-    const fresh = camps.filter(isFresh).length;
-    const retry = camps.filter(isRetry).length;
-    const reserved = camps.filter(c => campState(c.id).status === "reserviert").length;
-    const terminal = camps.filter(c => {
-      const s = campState(c.id).status;
-      return s === "reserviert" || s === "ausgebucht" || s === "warteliste";
-    }).length;
-    const contacted = camps.length - fresh;
-    const total = camps.length;
-
-    document.getElementById("campSummary").innerHTML = `
-      <div class="summary-card"><strong>${fresh}</strong><span>NEUE ANRUFE</span></div>
-      <div class="summary-card"><strong>${retry}</strong><span>RÜCKRUFE</span></div>
-      <div class="summary-card"><strong>${reserved}</strong><span>RESERVIERT</span></div>
-    `;
-
-    document.getElementById("openCount").textContent = fresh + retry;
-    document.getElementById("reservedCount").textContent = reserved;
-    document.getElementById("callProgress").textContent = `${contacted} / ${total}`;
-    document.getElementById("progressBar").style.width = total ? `${contacted / total * 100}%` : "0%";
-
-    const next = getCurrentCamp();
-    const phase = currentPhase();
-    document.getElementById("nextCampName").textContent = next ? next.name : "Alle Plätze bearbeitet";
-    document.getElementById("nextCampMeta").textContent = next
-      ? `${phase === "fresh" ? "Erstanruf" : "Rückrufrunde"} · ${next.region} · ${next.place} · Priorität ${priorityLetter(next)}`
-      : "Es gibt aktuell keinen offenen Eintrag.";
-  }
-
-  function renderCockpit() {
-    const camp = getCurrentCamp();
-    const cockpit = document.getElementById("callCockpit");
-
-    if (!camp) {
-      cockpit.innerHTML = `
-        <div class="cockpit-empty">
-          <div class="success-mark">✓</div>
-          <h2>Alle Plätze bearbeitet</h2>
-          <p>Du kannst in der Übersicht einen Status wieder auf „Noch anrufen“ setzen.</p>
-        </div>`;
-      return;
-    }
-
-    const s = campState(camp.id);
-    const phase = currentPhase();
-    const queue = phaseQueue(true);
-    const queueIndex = Math.max(0, queue.findIndex(c => c.id === camp.id));
-    const phaseLabel = phase === "fresh" ? "NÄCHSTER ERSTANRUF" : "RÜCKRUFRUNDE";
-    const phaseHint = phase === "fresh"
-      ? "Zuerst werden alle noch unversuchten Plätze angerufen."
-      : "Jetzt erscheinen die nicht erreichten Plätze erneut.";
-    const phoneAction = camp.phone
-      ? `<a class="cockpit-call" href="tel:${escapeHtml(camp.phone)}">☎ Jetzt anrufen</a>`
-      : `<button class="cockpit-call missing" data-edit="${escapeHtml(camp.id)}">☎ Telefonnummer ergänzen</button>`;
-
-    cockpit.innerHTML = `
-      <div class="cockpit-head">
-        <div>
-          <span class="eyebrow">${phaseLabel}</span>
-          <div class="priority priority-${priorityLetter(camp).toLowerCase()}">Priorität ${priorityLetter(camp)}</div>
-          <h2>${escapeHtml(camp.name)}</h2>
-          <p>${escapeHtml(camp.place)} · ${escapeHtml(camp.region)}</p>
-        </div>
-        <div class="camp-number">${queueIndex + 1}<small>von ${queue.length}</small></div>
-      </div>
-
-      <p class="phase-hint">${phaseHint}</p>
-
-      <div class="cockpit-rating">
-        <span>🚴 ${stars(camp.bike)}</span>
-        <span>🏊 ${stars(camp.water)}</span>
-        <span>👨‍👦 ${stars(camp.family)}</span>
-      </div>
-
-      <p class="note">${escapeHtml(camp.note)}</p>
-
-      <div class="cockpit-links">
-        ${phoneAction}
-        <a href="${escapeHtml(camp.website)}" target="_blank" rel="noopener">🌐 Website</a>
-        <a href="${escapeHtml(camp.maps)}" target="_blank" rel="noopener">📍 Karte</a>
-      </div>
-
-      <label class="quick-note-label">Kurze Notiz
-        <textarea id="quickNote" placeholder="Zum Beispiel: Vielleicht ab Mittwoch">${escapeHtml(s.notes)}</textarea>
-      </label>
-
-      <div class="result-title">Ergebnis des Anrufs</div>
-      <div class="result-grid">
-        <button class="result reserved" data-result="reserviert">✓ Reserviert</button>
-        <button class="result full" data-result="ausgebucht">× Ausgebucht</button>
-        <button class="result callback" data-result="rueckruf">↻ Erneut anrufen</button>
-        <button class="result wait" data-result="warteliste">≋ Warteliste</button>
-        <button class="result noanswer" data-result="keine-antwort">… Nicht erreicht</button>
-        <button class="result skip" id="skipCamp">→ Später</button>
-      </div>
-    `;
-
-    document.getElementById("quickNote")?.addEventListener("change", e => {
-      setCampState(camp.id, { notes:e.target.value });
-    });
-
-    cockpit.querySelectorAll("[data-result]").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const note = document.getElementById("quickNote")?.value || "";
-        const result = btn.dataset.result;
-        const label = statusNames[result];
-        state[camp.id] = { ...campState(camp.id), status:result, notes:note, calledAt:new Date().toISOString() };
-        localStorage.setItem(KEY, JSON.stringify(state));
-        currentCampId = null;
-        skippedThisSession.delete(camp.id);
-        render();
-        const remainsActive = result === "keine-antwort" || result === "rueckruf";
-        toast(remainsActive ? `${label} – kommt später wieder` : `${label} – nächster Platz`);
-      });
-    });
-
-    document.getElementById("skipCamp")?.addEventListener("click", () => {
-      skippedThisSession.add(camp.id);
-      currentCampId = null;
-      render();
-      toast("Für später übersprungen");
-    });
-
-    cockpit.querySelectorAll("[data-edit]").forEach(el => {
-      el.addEventListener("click", () => openCampDialog(camp));
-    });
-  }
-
-  function renderCampList() {
-    const statusFilter = document.getElementById("statusFilter").value;
-    const filtered = camps
-      .filter(c => activeRegion === "Alle" || c.region === activeRegion)
-      .filter(c => statusFilter === "Alle" || campState(c.id).status === statusFilter)
-      .sort((a, b) => {
-        const order = { offen:0, "keine-antwort":1, rueckruf:2, warteliste:3, reserviert:4, ausgebucht:5 };
-        return order[campState(a.id).status] - order[campState(b.id).status]
-          || priorityRank(b) - priorityRank(a)
-          || a.name.localeCompare(b.name, "de");
-      });
-
-    const list = document.getElementById("campList");
-    if (!filtered.length) {
-      list.innerHTML = `<article class="panel"><p class="muted">Keine passenden Campingplätze.</p></article>`;
-      return;
-    }
-
-    list.innerHTML = filtered.map(c => {
-      const s = campState(c.id);
-      const phoneButton = c.phone
-        ? `<a class="call" href="tel:${escapeHtml(c.phone)}">☎ Anrufen</a>`
-        : `<button data-edit="${escapeHtml(c.id)}">☎ Ergänzen</button>`;
-
-      return `
-        <article class="camp-card compact" data-card="${escapeHtml(c.id)}">
-          <div class="camp-top">
-            <div>
-              <div class="camp-label-row">
-                <span class="region">${escapeHtml(c.region)}</span>
-                <span class="priority-mini priority-${priorityLetter(c).toLowerCase()}">${priorityLetter(c)}</span>
-              </div>
-              <h3>${escapeHtml(c.name)}</h3>
-              <div class="place">${escapeHtml(c.place)}</div>
-            </div>
-            <span class="status-badge s-${escapeHtml(s.status)}">${escapeHtml(statusNames[s.status])}</span>
-          </div>
-
-          ${s.notes ? `<p class="saved-note">📝 ${escapeHtml(s.notes)}</p>` : ""}
-
-          <div class="contact-grid compact-actions">
-            ${phoneButton}
-            <a href="${escapeHtml(c.website)}" target="_blank" rel="noopener">🌐 Website</a>
-            <a href="${escapeHtml(c.maps)}" target="_blank" rel="noopener">📍 Karte</a>
-          </div>
-
-          <select data-status="${escapeHtml(c.id)}">
-            ${Object.entries(statusNames).map(([value, label]) =>
-              `<option value="${value}" ${s.status === value ? "selected" : ""}>${label}</option>`
-            ).join("")}
-          </select>
-
-          <textarea data-notes="${escapeHtml(c.id)}" placeholder="Kurze Notiz">${escapeHtml(s.notes)}</textarea>
-
-          <div class="card-actions">
-            ${isActive(c) ? `<button data-focus="${escapeHtml(c.id)}">Als Nächstes</button>` : ""}
-            <button data-edit="${escapeHtml(c.id)}">Bearbeiten</button>
-            ${c.custom ? `<button data-delete="${escapeHtml(c.id)}">Löschen</button>` : ""}
-          </div>
-        </article>
-      `;
-    }).join("");
-
-    bindCampControls();
-  }
-
-  function bindCampControls() {
-    document.querySelectorAll("[data-status]").forEach(el => {
-      el.addEventListener("change", () => setCampState(el.dataset.status, { status:el.value }));
-    });
-    document.querySelectorAll("[data-notes]").forEach(el => {
-      el.addEventListener("change", () => setCampState(el.dataset.notes, { notes:el.value }));
-    });
-    document.querySelectorAll("[data-focus]").forEach(el => {
-      el.addEventListener("click", () => {
-        skippedThisSession.delete(el.dataset.focus);
-        currentCampId = el.dataset.focus;
-        render();
-        document.getElementById("callCockpit").scrollIntoView({ behavior:"smooth", block:"start" });
-      });
-    });
-    document.querySelectorAll("[data-edit]").forEach(el => {
-      el.addEventListener("click", () => openCampDialog(camps.find(c => c.id === el.dataset.edit)));
-    });
-    document.querySelectorAll("[data-delete]").forEach(el => {
-      el.addEventListener("click", () => {
-        if (!confirm("Diesen eigenen Campingplatz löschen?")) return;
-        customCamps = customCamps.filter(c => c.id !== el.dataset.delete);
-        delete state[el.dataset.delete];
-        persist();
-      });
-    });
-  }
-
-  function render() {
-    camps = [...baseCamps, ...customCamps];
-    renderSummary();
-    renderCockpit();
-    renderCampList();
-  }
-
-  function showPage(id) {
-    document.querySelectorAll(".page").forEach(p => p.classList.toggle("active", p.id === id));
-    document.querySelectorAll(".bottom-nav button").forEach(b => b.classList.toggle("active", b.dataset.page === id));
-    window.scrollTo({ top:0, behavior:"smooth" });
-  }
-
-  function openCampDialog(camp = null) {
-    document.getElementById("campId").value = camp?.id || "";
-    document.getElementById("campName").value = camp?.name || "";
-    document.getElementById("campRegion").value = camp?.region || "Soča-Tal";
-    document.getElementById("campPlace").value = camp?.place || "";
-    document.getElementById("campPriority").value = camp ? priorityLetter(camp) : "B";
-    document.getElementById("campPhone").value = camp?.phoneDisplay === "Telefon ergänzen" ? "" : (camp?.phoneDisplay || "");
-    document.getElementById("campWebsite").value = camp?.website || "";
-    document.getElementById("campNote").value = camp?.note || "";
-    document.getElementById("campDialog").showModal();
-  }
-
-  function saveCampFromDialog(event) {
-    event.preventDefault();
-    const id = document.getElementById("campId").value;
-    const name = document.getElementById("campName").value.trim();
-    if (!name) return;
-
-    const phone = document.getElementById("campPhone").value.trim();
-    const place = document.getElementById("campPlace").value.trim();
-
-    const item = {
-      id: id || `custom-${Date.now()}`,
-      name,
-      region: document.getElementById("campRegion").value,
-      place,
-      priorityLetter: document.getElementById("campPriority").value,
-      priority: { A:10, B:8, C:5 }[document.getElementById("campPriority").value],
-      phone,
-      phoneDisplay: phone || "Telefon ergänzen",
-      website: document.getElementById("campWebsite").value.trim() || "#",
-      maps: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name + " " + place)}`,
-      bike:3, water:3, family:3,
-      note: document.getElementById("campNote").value.trim(),
-      custom:true
-    };
-
-    const existingCustom = customCamps.findIndex(c => c.id === item.id);
-    if (existingCustom >= 0) {
-      customCamps[existingCustom] = item;
-    } else {
-      const base = baseCamps.find(c => c.id === item.id);
-      if (base) {
-        item.id = `custom-${Date.now()}`;
-        customCamps.push(item);
-      } else {
-        customCamps.push(item);
+  function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove("show"),1300)}
+  function phase(){return camps.some(fresh)?"fresh":camps.some(retry)?"retry":"done"}
+  function queue(includeSkipped=false){
+    const list=camps.filter(phase()==="fresh"?fresh:retry).filter(c=>includeSkipped||!skipped.has(c.id));
+    return list.sort((a,b)=>{
+      if(phase()==="retry"){
+        const ta=Date.parse(cs(a.id).calledAt||0)||0,tb=Date.parse(cs(b.id).calledAt||0)||0;
+        if(ta!==tb)return ta-tb;
       }
-    }
-
-    document.getElementById("campDialog").close();
-    persist();
-    toast("Campingplatz gespeichert");
-  }
-
-  function exportData() {
-    const data = JSON.stringify({ state, customCamps }, null, 2);
-    const blob = new Blob([data], { type:"application/json" });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "roadbook-v4-sicherung.json";
-    a.click();
-    URL.revokeObjectURL(a.href);
-  }
-
-  async function importData(file) {
-    try {
-      const parsed = JSON.parse(await file.text());
-      state = parsed.state || {};
-      customCamps = parsed.customCamps || [];
-      persist();
-      toast("Sicherung importiert");
-    } catch {
-      alert("Die Datei konnte nicht importiert werden.");
-    }
-  }
-
-  function initTheme() {
-    const saved = localStorage.getItem(THEME_KEY);
-    if (saved === "dark") document.documentElement.classList.add("dark");
-    document.getElementById("themeToggle").addEventListener("click", () => {
-      document.documentElement.classList.toggle("dark");
-      localStorage.setItem(THEME_KEY, document.documentElement.classList.contains("dark") ? "dark" : "light");
+      return rank(b)-rank(a)||(b.priority||0)-(a.priority||0)||a.name.localeCompare(b.name,"de");
     });
   }
-
-  function initChecklist() {
-    document.querySelectorAll("[data-persist]").forEach(el => {
-      const key = `_check_${el.dataset.persist}`;
-      el.checked = !!state[key];
-      el.addEventListener("change", () => {
-        state[key] = el.checked;
-        persist();
-      });
-    });
+  function current(){
+    const p=phase(), found=camps.find(c=>c.id===currentCampId&&active(c)&&((p==="fresh"&&fresh(c))||(p==="retry"&&retry(c)))&&!skipped.has(c.id));
+    if(found)return found;
+    let n=queue()[0];
+    if(!n&&queue(true).length){skipped.clear();n=queue()[0]}
+    currentCampId=n?.id||null;return n||null;
   }
-
-  function initCountdown() {
-    const days = Math.ceil((new Date("2026-08-08T08:00:00") - new Date()) / 86400000);
-    document.getElementById("countdown").textContent = days > 0 ? `${days} Tage` : "Los geht’s";
+  function go(page){
+    document.querySelectorAll(".page").forEach(x=>x.classList.toggle("active",x.id===page));
+    document.querySelectorAll(".bottom-nav button").forEach(x=>x.classList.toggle("active",x.dataset.page===page));
+    window.scrollTo({top:0,behavior:"smooth"});
   }
-
-  function initEvents() {
-    document.querySelectorAll(".bottom-nav button").forEach(btn => {
-      btn.addEventListener("click", () => showPage(btn.dataset.page));
-    });
-    document.querySelectorAll("[data-go]").forEach(btn => {
-      btn.addEventListener("click", () => showPage(btn.dataset.go));
-    });
-
-    document.querySelectorAll("#regionFilter button").forEach(btn => {
-      btn.addEventListener("click", () => {
-        activeRegion = btn.dataset.region;
-        document.querySelectorAll("#regionFilter button").forEach(x => x.classList.toggle("active", x === btn));
-        renderCampList();
-      });
-    });
-
-    document.getElementById("statusFilter").addEventListener("change", renderCampList);
-    document.getElementById("addCampBtn").addEventListener("click", () => openCampDialog());
-    document.getElementById("saveCampBtn").addEventListener("click", saveCampFromDialog);
-    document.getElementById("exportBtn").addEventListener("click", exportData);
-    document.getElementById("importFile").addEventListener("change", e => e.target.files[0] && importData(e.target.files[0]));
-    document.getElementById("resetBtn").addEventListener("click", () => {
-      if (!confirm("Alle lokalen Status, Notizen und eigenen Plätze löschen?")) return;
-      localStorage.removeItem(KEY);
-      localStorage.removeItem(CUSTOM_KEY);
-      location.reload();
-    });
+  function renderSummary(){
+    const f=camps.filter(fresh).length,r=camps.filter(retry).length,res=camps.filter(c=>cs(c.id).status==="reserviert").length;
+    const done=camps.filter(c=>terminal.has(cs(c.id).status)).length,total=camps.length;
+    document.getElementById("campSummary").innerHTML=`
+      <div class="summary-card"><strong>${f}</strong><span>NEUE ANRUFE</span></div>
+      <div class="summary-card"><strong>${r}</strong><span>RÜCKRUFE</span></div>
+      <div class="summary-card"><strong>${res}</strong><span>RESERVIERT</span></div>`;
+    document.getElementById("openCount").textContent=f+r;
+    document.getElementById("reservedCount").textContent=res;
+    document.getElementById("callProgress").textContent=`${done} / ${total} erledigt`;
+    document.getElementById("callBreakdown").textContent=`${f} neu · ${r} Rückrufe`;
+    document.getElementById("progressBar").style.width=total?`${done/total*100}%`:"0%";
+    const n=current();
+    document.getElementById("nextCampName").textContent=n?n.name:"Telefonrunde geschafft";
+    document.getElementById("nextCampMeta").textContent=n?`${phase()==="fresh"?"Nächster Erstanruf":"Rückrufrunde"} · ${n.place} · Priorität ${letter(n)}`:"Alle Einträge sind abgeschlossen.";
   }
-
-  function registerServiceWorker() {
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("./service-worker.js").catch(() => {});
-    }
+  function stars(n=0){return "★".repeat(n)+"☆".repeat(Math.max(0,5-n))}
+  function renderCockpit(){
+    const box=document.getElementById("callCockpit"),c=current();
+    if(!c){box.innerHTML='<div class="cockpit-empty"><div class="success-mark">✓</div><h2>Super, Telefonrunde geschafft</h2><p>Aktuell gibt es keinen offenen Kontakt.</p></div>';return}
+    const s=cs(c.id),q=quality(c),all=queue(true),idx=Math.max(0,all.findIndex(x=>x.id===c.id));
+    const call=c.phone?`<a class="cockpit-call" href="tel:${esc(c.phone)}">☎ Jetzt anrufen</a>`:`<button class="cockpit-call missing" data-edit="${esc(c.id)}">☎ Telefon ergänzen</button>`;
+    const web=c.website?`<a href="${esc(c.website)}" target="_blank" rel="noopener">🌐 Website</a>`:'<span class="disabled-link">🌐 Fehlt</span>';
+    const maps=c.maps?`<a href="${esc(c.maps)}" target="_blank" rel="noopener">📍 Navigation</a>`:'<span class="disabled-link">📍 Fehlt</span>';
+    box.innerHTML=`
+      <div class="cockpit-head"><div><span class="eyebrow">${phase()==="fresh"?"NÄCHSTER ANRUF":"RÜCKRUFRUNDE"}</span><div class="priority priority-${letter(c).toLowerCase()}">Priorität ${letter(c)}</div><h2>${esc(c.name)}</h2><p>${esc(c.place)} · ${esc(c.region)}</p></div><div class="camp-number">${idx+1}<small>von ${all.length}</small></div></div>
+      <div class="trust-row"><span class="quality ${q.key}">${q.icon} ${q.text}</span><button class="favorite-btn ${s.favorite?"active":""}" id="favoriteCurrent" aria-label="Favorit umschalten">${s.favorite?"★":"☆"}</button></div>
+      <div class="cockpit-rating"><span>🚴 ${stars(c.bike)}</span><span>🏊 ${stars(c.water)}</span><span>👨‍👦 ${stars(c.family)}</span></div>
+      <p class="note">${esc(c.note||"Keine Zusatznotiz.")}</p>
+      <div class="cockpit-links">${call}${web}${maps}</div>
+      <label class="quick-note-label">Kurze Notiz<textarea id="quickNote" placeholder="Zum Beispiel: Rückruf ab 18 Uhr">${esc(s.notes)}</textarea></label>
+      <div class="result-title">ERGEBNIS DES ANRUFS</div>
+      <div class="result-grid"><button class="result reserved" data-result="reserviert">✓ Reserviert</button><button class="result full" data-result="ausgebucht">× Ausgebucht</button><button class="result callback" data-result="rueckruf">↻ Rückruf</button><button class="result wait" data-result="warteliste">≋ Warteliste</button><button class="result noanswer" data-result="keine-antwort">… Nicht erreicht</button><button class="result skip" id="skipCamp">→ Später</button></div>`;
+    document.getElementById("favoriteCurrent").onclick=()=>{state[c.id]={...s,favorite:!s.favorite};persist();toast(!s.favorite?"Als Favorit gespeichert":"Favorit entfernt")};
+    document.getElementById("quickNote").addEventListener("change",e=>{state[c.id]={...cs(c.id),notes:e.target.value};persist(false)});
+    box.querySelectorAll("[data-result]").forEach(b=>b.onclick=()=>{
+      const result=b.dataset.result,note=document.getElementById("quickNote").value;
+      state[c.id]={...cs(c.id),status:result,notes:note,calledAt:new Date().toISOString()};currentCampId=null;skipped.delete(c.id);persist();
+      toast(retry(c)?`${labels[result]} – kommt später wieder`:`${labels[result]} – nächster Platz`);
+    });
+    document.getElementById("skipCamp").onclick=()=>{skipped.add(c.id);currentCampId=null;render();toast("Für später verschoben")};
+    box.querySelectorAll("[data-edit]").forEach(b=>b.onclick=()=>openDialog(c));
   }
+  function matches(c){
+    const s=cs(c.id),hay=`${c.name} ${c.place} ${c.region} ${c.note||""}`.toLowerCase();
+    return (activeRegion==="Alle"||c.region===activeRegion)&&(activeStatus==="Alle"||s.status===activeStatus)&&(!favoritesOnly||s.favorite)&&(!searchTerm||hay.includes(searchTerm));
+  }
+  function renderList(){
+    const list=camps.filter(matches).sort((a,b)=>rank(b)-rank(a)||a.name.localeCompare(b.name,"de"));
+    document.getElementById("campList").innerHTML=list.length?list.map(c=>{
+      const s=cs(c.id),q=quality(c);
+      return `<article class="camp-card compact"><div class="camp-card__top"><div><div class="camp-label-row"><span class="region">${esc(c.region)}</span><span class="priority-mini priority-${letter(c).toLowerCase()}">${letter(c)}</span></div><h3>${esc(c.name)}</h3><p>${esc(c.place)}</p></div><button class="list-favorite ${s.favorite?"active":""}" data-favorite="${esc(c.id)}">${s.favorite?"★":"☆"}</button></div><div class="card-meta"><span class="quality ${q.key}">${q.icon} ${q.text}</span><span class="status status-${s.status}">${labels[s.status]}</span></div>${s.notes?`<p class="saved-note">${esc(s.notes)}</p>`:""}<div class="compact-actions"><button data-focus="${esc(c.id)}">Im Assistenten öffnen</button><button data-edit="${esc(c.id)}">Bearbeiten</button></div></article>`
+    }).join(""):'<article class="panel empty-list"><h3>Keine Treffer</h3><p>Suchbegriff oder Filter ändern.</p></article>';
+    document.querySelectorAll("[data-focus]").forEach(b=>b.onclick=()=>{const c=camps.find(x=>x.id===b.dataset.focus);if(c&&!active(c)){state[c.id]={...cs(c.id),status:"offen"};persist(false)}currentCampId=c.id;skipped.delete(c.id);render();window.scrollTo({top:0,behavior:"smooth"})});
+    document.querySelectorAll("[data-favorite]").forEach(b=>b.onclick=()=>{const id=b.dataset.favorite;state[id]={...cs(id),favorite:!cs(id).favorite};persist()});
+    document.querySelectorAll("[data-edit]").forEach(b=>b.onclick=()=>openDialog(camps.find(c=>c.id===b.dataset.edit)));
+  }
+  function render(){renderSummary();renderCockpit();renderList()}
 
-  initTheme();
-  initChecklist();
-  initCountdown();
-  initEvents();
+  function openDialog(c={}){
+    const d=document.getElementById("campDialog");
+    document.getElementById("campId").value=c.id||"";document.getElementById("campName").value=c.name||"";document.getElementById("campRegion").value=c.region||"Soča-Tal";document.getElementById("campPlace").value=c.place||"";document.getElementById("campPriority").value=letter(c)||"B";document.getElementById("campPhone").value=c.phone||"";document.getElementById("campWebsite").value=c.website||"";document.getElementById("campNote").value=c.note||"";d.showModal();
+  }
+  document.getElementById("campForm").addEventListener("submit",e=>{
+    e.preventDefault();const id=document.getElementById("campId").value||`custom-${Date.now()}`;
+    const existing=camps.find(c=>c.id===id)||{};
+    const obj={...existing,id,name:document.getElementById("campName").value.trim(),region:document.getElementById("campRegion").value,place:document.getElementById("campPlace").value.trim(),priorityLetter:document.getElementById("campPriority").value,phone:document.getElementById("campPhone").value.trim(),website:document.getElementById("campWebsite").value.trim(),note:document.getElementById("campNote").value.trim(),maps:existing.maps||`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(document.getElementById("campName").value+" "+document.getElementById("campPlace").value)}`,bike:existing.bike||3,water:existing.water||3,family:existing.family||3};
+    const i=customCamps.findIndex(c=>c.id===id);if(i>=0)customCamps[i]=obj;else customCamps.push(obj);camps=[...baseCamps,...customCamps.filter(x=>!baseCamps.some(b=>b.id===x.id))];
+    if(baseCamps.some(b=>b.id===id)){customCamps=customCamps.filter(x=>x.id!==id);customCamps.push(obj);camps=baseCamps.map(b=>b.id===id?obj:b).concat(customCamps.filter(x=>!baseCamps.some(b=>b.id===x.id)))}
+    document.getElementById("campDialog").close();persist();toast("Campingplatz gespeichert");
+  });
+
+  document.querySelectorAll("[data-page]").forEach(b=>b.onclick=()=>go(b.dataset.page));
+  document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>go(b.dataset.go));
+  document.getElementById("addCampBtn").onclick=()=>openDialog();
+  document.querySelectorAll("#regionFilter button").forEach(b=>b.onclick=()=>{activeRegion=b.dataset.region;document.querySelectorAll("#regionFilter button").forEach(x=>x.classList.toggle("active",x===b));renderList()});
+  document.getElementById("statusFilter").onchange=e=>{activeStatus=e.target.value;renderList()};
+  document.getElementById("campSearch").oninput=e=>{searchTerm=e.target.value.trim().toLowerCase();renderList()};
+  document.getElementById("favoriteFilter").onclick=e=>{favoritesOnly=!favoritesOnly;e.currentTarget.classList.toggle("active",favoritesOnly);e.currentTarget.setAttribute("aria-pressed",String(favoritesOnly));e.currentTarget.textContent=favoritesOnly?"★ Favoriten":"☆ Nur Favoriten";renderList()};
+
+  document.querySelectorAll("[data-persist]").forEach(el=>{el.checked=!!state[`check:${el.dataset.persist}`];el.onchange=()=>{state[`check:${el.dataset.persist}`]=el.checked;persist(false)}});
+  document.getElementById("themeToggle").onclick=()=>{const dark=document.documentElement.classList.toggle("dark");localStorage.setItem(THEME_KEY,dark?"dark":"light")};
+  if(localStorage.getItem(THEME_KEY)==="dark")document.documentElement.classList.add("dark");
+  document.getElementById("exportBtn").onclick=()=>{const blob=new Blob([JSON.stringify({state,customCamps},null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="roadbook-4-3-sicherung.json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)};
+  document.getElementById("importFile").onchange=async e=>{try{const data=JSON.parse(await e.target.files[0].text());state=data.state||data||{};customCamps=data.customCamps||[];camps=[...baseCamps,...customCamps];persist();toast("Sicherung importiert")}catch{alert("Die Sicherung konnte nicht gelesen werden.")}};
+  document.getElementById("resetBtn").onclick=()=>{if(confirm("Alle lokalen Status, Notizen und Favoriten löschen?")){localStorage.removeItem(KEY);localStorage.removeItem(CUSTOM_KEY);location.reload()}};
+
+  const start=new Date("2026-08-08T00:00:00"),days=Math.ceil((start-new Date())/86400000);
+  document.getElementById("countdown").textContent=days>1?`${days} Tage`:days===1?"1 Tag":days===0?"Heute":"gestartet";
+  if("serviceWorker" in navigator)navigator.serviceWorker.register("service-worker.js").catch(()=>{});
   render();
-  registerServiceWorker();
 })();

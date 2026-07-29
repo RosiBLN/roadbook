@@ -174,3 +174,20 @@ dialog label{display:block;font-size:12px;font-weight:800;margin:10px 0}
   font-size:12px;
   line-height:1.4
 }
+
+/* Roadbook 4.3 – Reiseassistent */
+.assistant-tools{display:grid;grid-template-columns:1fr auto;gap:8px;margin:14px 0 10px}
+.search-box{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:15px;padding:0 12px;box-shadow:var(--shadow)}
+.search-box input{border:0;background:transparent;box-shadow:none;padding:13px 0;min-width:0}
+.favorite-filter{border:1px solid var(--line);border-radius:15px;padding:0 13px;background:var(--surface);color:var(--ink);font-weight:900}
+.favorite-filter.active{background:#fff0b7;color:#6d5100}
+.trust-row{display:flex;align-items:center;justify-content:space-between;margin:13px 0 2px}
+.quality{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:6px 9px;font-size:11px;font-weight:900}
+.quality.verified{background:#d6eadb;color:#1c6540}.quality.partial{background:#f4e4ad;color:#735300}.quality.check{background:#ead5d3;color:#873833}
+.favorite-btn,.list-favorite{border:0;background:transparent;color:#b99725;font-size:29px;line-height:1;padding:3px}.favorite-btn.active,.list-favorite.active{color:#d1a900}
+.card-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:10px 0}
+.compact-actions{display:grid;grid-template-columns:1.5fr 1fr;gap:7px}.compact-actions button{border:0;border-radius:12px;padding:10px;background:var(--surface-2);color:var(--ink);font-weight:800}
+.disabled-link{border-radius:14px;padding:13px 7px;text-align:center;font-weight:900;background:var(--surface-2);color:var(--muted)}
+.empty-list{text-align:center}.empty-list p{color:var(--muted)}
+#callBreakdown{display:block;margin-top:5px}
+@media(max-width:470px){.assistant-tools{grid-template-columns:1fr}.favorite-filter{min-height:44px}.trust-row{margin-top:12px}}
