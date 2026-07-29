@@ -7,7 +7,7 @@
   <meta name="description" content="Roadbook für die Vater-Sohn-Reise von Elias und Papa">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="stylesheet" href="assets/style.css">
-  <title>Roadbook 4.3.1 – Elias & Papa</title>
+  <title>Roadbook 4.4 – Elias & Papa</title>
 </head>
 <body>
   <div class="app-shell">
@@ -15,7 +15,7 @@
       <div class="hero__overlay"></div>
       <div class="hero__content">
         <div class="topline">
-          <span class="brand">ROADBOOK 4.3.1</span>
+          <span class="brand">ROADBOOK 4.4</span>
           <button id="themeToggle" class="round-btn" aria-label="Darstellung wechseln">◐</button>
         </div>
         <p class="eyebrow">FATHER & SON ADVENTURE</p>
@@ -23,7 +23,7 @@
         <p class="hero__sub">08.–15. August 2026 · Kärnten · Soča · Istrien</p>
         <div class="hero__metrics">
           <div><strong id="countdown">–</strong><span>bis zum Start</span></div>
-          <div><strong id="openCount">–</strong><span>offene Kontakte</span></div>
+          <div><strong id="openCount">–</strong><span>noch anzurufen</span></div>
           <div><strong id="reservedCount">–</strong><span>reserviert</span></div>
         </div>
       </div>
@@ -35,16 +35,15 @@
           <div>
             <span class="eyebrow">NÄCHSTER SCHRITT</span>
             <h2 id="nextCampName">Campingplatz auswählen</h2>
-            <p id="nextCampMeta">Die Leitstelle folgt eurer Route und sortiert danach nach Priorität.</p>
+            <p id="nextCampMeta">Die Leitstelle folgt eurer Reiseroute: zuerst Soča, danach Istrien.</p>
           </div>
           <button class="primary" data-go="camping">Camping-Leitstelle öffnen</button>
         </article>
 
         <div class="stat-grid">
           <article class="stat-card">
-            <span>Telefonrunde</span>
+            <span>Anruf-Fortschritt</span>
             <strong id="callProgress">0 / 0</strong>
-            <small id="callBreakdown">0 neu · 0 Rückrufe</small>
             <div class="progress"><i id="progressBar"></i></div>
           </article>
           <article class="stat-card">
@@ -96,15 +95,7 @@
 
         <div id="campSummary" class="summary-grid"></div>
 
-        <article id="callCockpit" class="call-cockpit" tabindex="-1"></article>
-
-        <div class="assistant-tools">
-          <label class="search-box">
-            <span>⌕</span>
-            <input id="campSearch" type="search" placeholder="Campingplatz oder Ort suchen" autocomplete="off">
-          </label>
-          <button id="favoriteFilter" class="favorite-filter" aria-pressed="false">☆ Nur Favoriten</button>
-        </div>
+        <article id="callCockpit" class="call-cockpit"></article>
 
         <div class="toolbar">
           <div class="segment" id="regionFilter">
@@ -141,12 +132,12 @@
         </div>
 
         <div class="days">
-          <article class="day-card"><div class="day-date">08<small>AUG</small></div><div><h3>Kärnten → Soča</h3><p>Anreise, Campingplatz beziehen und erster Badestopp.</p></div></article>
-          <article class="day-card"><div class="day-date">09<small>AUG</small></div><div><h3>Kobarid & Kozjak</h3><p>Radtour, Hängebrücke und Wasserfall.</p></div></article>
-          <article class="day-card"><div class="day-date">10<small>AUG</small></div><div><h3>Wasserabenteuer</h3><p>Rafting oder Canyoning; Treffpunkt möglichst per Rad erreichbar.</p></div></article>
-          <article class="day-card"><div class="day-date wide">11–13<small>AUG</small></div><div><h3>Istrien flexibel</h3><p>Rovinj, Küstenradwege, Baden und Kap Kamenjak.</p></div></article>
-          <article class="day-card"><div class="day-date">14<small>AUG</small></div><div><h3>Letzte Übernachtung</h3><p>Camper vorbereiten und Rückfahrt sichern.</p></div></article>
-          <article class="day-card"><div class="day-date">15<small>AUG</small></div><div><h3>Berlin</h3><p>Ankunft und Abschlussfoto.</p></div></article>
+          <details class="day-card"><summary><span class="day-date">08<small>AUG</small></span><span><strong>Kärnten → Soča</strong><small>Anreise und erster Badestopp</small></span></summary><div class="day-details"><p>Vom Glocknerhof ins Soča-Tal fahren, Campingplatz beziehen und den Abend ruhig am Wasser ausklingen lassen.</p><p><b>Heute wichtig:</b> Stellplatz, Strombedarf, Fahrräder und späteste Ankunft klären.</p></div></details>
+          <details class="day-card"><summary><span class="day-date">09<small>AUG</small></span><span><strong>Kobarid & Kozjak</strong><small>Rad, Hängebrücke und Wasserfall</small></span></summary><div class="day-details"><p>Leichte Radrunde rund um Kobarid. Kozjak-Wasserfall und Hängebrücke nur bei sicherem Wetter einplanen.</p><p><b>Plan B:</b> Tolmin-Klamm oder kurzer Badetag an der Soča.</p></div></details>
+          <details class="day-card"><summary><span class="day-date">10<small>AUG</small></span><span><strong>Wasserabenteuer</strong><small>Rafting oder Canyoning</small></span></summary><div class="day-details"><p>Anbieter und Treffpunkt am Vortag bestätigen. Wenn möglich per Fahrrad erreichbar.</p></div></details>
+          <details class="day-card"><summary><span class="day-date wide">11–13<small>AUG</small></span><span><strong>Istrien flexibel</strong><small>Rovinj, Küste, Baden und Rad</small></span></summary><div class="day-details"><p>Je nach Wetter und Stellplatz zwischen Rovinj, Vrsar, Lim-Bucht und Kap Kamenjak entscheiden. Standorttage vermeiden unnötigen Abbau.</p><p><b>FKK:</b> Regeln des jeweiligen Platzes vorab gemeinsam prüfen.</p></div></details>
+          <details class="day-card"><summary><span class="day-date">14<small>AUG</small></span><span><strong>Letzte Übernachtung</strong><small>Camper und Rückfahrt vorbereiten</small></span></summary><div class="day-details"><p>Wasser, Abwasser, Gas, Fahrräder und Innenraum kontrollieren. Rückfahrtroute und Pausen festlegen.</p></div></details>
+          <details class="day-card"><summary><span class="day-date">15<small>AUG</small></span><span><strong>Berlin</strong><small>Rückfahrt und Abschlussfoto</small></span></summary><div class="day-details"><p>Früh und ohne Zeitdruck starten. Nach der Ankunft Daten sichern.</p></div></details>
         </div>
       </section>
 
@@ -158,16 +149,19 @@
           </div>
         </div>
 
-        <article class="panel">
-          <h2>Gesprächsleitfaden</h2>
-          <ol class="script">
-            <li>VW California, zwei Personen und Reisezeitraum nennen.</li>
-            <li>Flexible An- und Abreise ausdrücklich erwähnen.</li>
-            <li>Nach Warteliste, spontaner Anreise und Rückruf fragen.</li>
-            <li>Strom, Sanitäreinrichtungen und Fahrradabstellung klären.</li>
-            <li>Gesamtpreis und Stornierungsbedingungen notieren.</li>
-          </ol>
-        </article>
+        <details class="panel tool-details">
+          <summary><span><strong>☎ Gesprächsleitfaden</strong><small>Antippen zum Öffnen</small></span></summary>
+          <div class="tool-content">
+            <p class="script-intro">„Guten Tag, wir reisen mit einem VW California, Vater und Sohn, und suchen einen Stellplatz.“</p>
+            <ol class="script">
+              <li>Zeitraum nennen und Flexibilität betonen.</li>
+              <li>Nach spontaner Anreise, Warteliste oder Rückruf fragen.</li>
+              <li>Fahrzeughöhe, Markise und Fahrradträger nennen.</li>
+              <li>Strom, Sanitär, Fahrradabstellung und späteste Anreise klären.</li>
+              <li>Gesamtpreis, Anzahlung und Stornierung notieren.</li>
+            </ol>
+          </div>
+        </details>
 
         <article class="panel">
           <h2>Datensicherung</h2>

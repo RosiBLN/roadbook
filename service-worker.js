@@ -1,5 +1,5 @@
 
-const CACHE = "roadbook-v4-3-1-1";
+const CACHE = "roadbook-v4-3";
 const ASSETS = [
   "./",
   "./index.html",

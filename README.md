@@ -1,14 +1,10 @@
-# Roadbook 4.3.1 – Elias & Papa
+# Roadbook 4.4 – stabile Testversion
 
-Korrigierte Testversion des mobilen Reiseassistenten.
-
-## Neu und repariert
-- Telefonreihenfolge folgt jetzt der Reiseroute: zuerst Soča-Tal, danach Istrien
-- innerhalb des aktuellen Ziels: zuerst neue Anrufe, dann Rückrufe, jeweils A vor B vor C
-- „Im Assistenten öffnen“ scrollt direkt zur Anrufkarte statt an den Seitenanfang
-- Bearbeiten-Fenster lässt sich zuverlässig speichern und über X oder Hintergrund schließen
-- Websites öffnen separat; die Roadbook-App bleibt geöffnet
-- Cache-Version erhöht, damit GitHub Pages das Update übernimmt
+- Telefonreihenfolge: zuerst Soča-Tal, danach Istrien, dann Priorität A/B/C.
+- Websites und Karten werden extern geöffnet.
+- Bearbeiten, Speichern und Schließen des Dialogs wurden repariert.
+- Gesprächsleitfaden und Tagespläne sind nativ aufklappbar.
+- Der Assistent wird direkt angesprungen.
 
 ## GitHub Pages
-Alle Dateien mit unveränderter Ordnerstruktur hochladen und bestehende Dateien ersetzen. Danach die Roadbook-Seite einmal schließen und neu öffnen.
+Alle Dateien ersetzen. Danach die installierte App vollständig schließen und neu öffnen, damit der neue Offline-Cache geladen wird.

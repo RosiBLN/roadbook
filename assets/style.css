@@ -175,27 +175,23 @@ dialog label{display:block;font-size:12px;font-weight:800;margin:10px 0}
   line-height:1.4
 }
 
-/* Roadbook 4.3 – Reiseassistent */
-.assistant-tools{display:grid;grid-template-columns:1fr auto;gap:8px;margin:14px 0 10px}
-.search-box{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:15px;padding:0 12px;box-shadow:var(--shadow)}
-.search-box input{border:0;background:transparent;box-shadow:none;padding:13px 0;min-width:0}
-.favorite-filter{border:1px solid var(--line);border-radius:15px;padding:0 13px;background:var(--surface);color:var(--ink);font-weight:900}
-.favorite-filter.active{background:#fff0b7;color:#6d5100}
-.trust-row{display:flex;align-items:center;justify-content:space-between;margin:13px 0 2px}
-.quality{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:6px 9px;font-size:11px;font-weight:900}
-.quality.verified{background:#d6eadb;color:#1c6540}.quality.partial{background:#f4e4ad;color:#735300}.quality.check{background:#ead5d3;color:#873833}
-.favorite-btn,.list-favorite{border:0;background:transparent;color:#b99725;font-size:29px;line-height:1;padding:3px}.favorite-btn.active,.list-favorite.active{color:#d1a900}
-.card-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:10px 0}
-.compact-actions{display:grid;grid-template-columns:1.5fr 1fr;gap:7px}.compact-actions button{border:0;border-radius:12px;padding:10px;background:var(--surface-2);color:var(--ink);font-weight:800}
-.disabled-link{border-radius:14px;padding:13px 7px;text-align:center;font-weight:900;background:var(--surface-2);color:var(--muted)}
-.empty-list{text-align:center}.empty-list p{color:var(--muted)}
-#callBreakdown{display:block;margin-top:5px}
-@media(max-width:470px){.assistant-tools{grid-template-columns:1fr}.favorite-filter{min-height:44px}.trust-row{margin-top:12px}}
 
-/* Roadbook 4.3.1 – Routenlogik und Bedienkorrekturen */
-.route-first{margin:-2px 0 13px;padding:9px 11px;border-radius:12px;background:var(--mint);font-size:12px;color:var(--ink)}
-.external-hint{margin:-4px 2px 13px;color:var(--muted);font-size:11px;line-height:1.4}
-.call-cockpit{scroll-margin-top:10px}
-dialog form .primary{width:100%;margin-top:8px}
-.dialog-close{min-width:44px;min-height:44px;border-radius:12px}
-.dialog-close:active{background:var(--surface-2)}
+/* Roadbook 4.4: robuste native Aufklappbereiche */
+.day-card { display:block; padding:0; overflow:hidden; }
+.day-card summary { display:flex; align-items:center; gap:14px; padding:16px; cursor:pointer; list-style:none; }
+.day-card summary::-webkit-details-marker, .tool-details summary::-webkit-details-marker { display:none; }
+.day-card summary::after, .tool-details summary::after { content:"＋"; margin-left:auto; font-size:1.35rem; font-weight:700; }
+.day-card[open] summary::after, .tool-details[open] summary::after { content:"−"; }
+.day-card summary span:last-of-type { display:grid; gap:3px; }
+.day-card summary strong { font-size:1rem; }
+.day-card summary small { color:var(--muted); }
+.day-details { padding:0 16px 16px 78px; border-top:1px solid var(--line); }
+.day-details p { margin:.8rem 0 0; }
+.tool-details { padding:0; }
+.tool-details summary { display:flex; align-items:center; padding:18px; cursor:pointer; list-style:none; }
+.tool-details summary span { display:grid; gap:4px; }
+.tool-details summary small { color:var(--muted); font-weight:400; }
+.tool-content { padding:0 18px 18px; border-top:1px solid var(--line); }
+.script-intro { font-weight:600; }
+#callCockpit { scroll-margin-top:16px; }
+@media (max-width:560px){ .day-details{padding-left:16px;} }
