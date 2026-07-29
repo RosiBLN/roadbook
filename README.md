@@ -1,10 +1,10 @@
-# Roadbook 4.4 – stabile Testversion
+# Roadbook 4.5 – Abschlussversion
 
+- Deutscher und englischer Gesprächsleitfaden.
+- Kompakte Packliste.
+- Abfahrtscheck für den VW California.
 - Telefonreihenfolge: zuerst Soča-Tal, danach Istrien, dann Priorität A/B/C.
-- Websites und Karten werden extern geöffnet.
-- Bearbeiten, Speichern und Schließen des Dialogs wurden repariert.
-- Gesprächsleitfaden und Tagespläne sind nativ aufklappbar.
-- Der Assistent wird direkt angesprungen.
+- Websites, Karten, Bearbeiten, Tagespläne und Datensicherung bleiben enthalten.
 
 ## GitHub Pages
-Alle Dateien ersetzen. Danach die installierte App vollständig schließen und neu öffnen, damit der neue Offline-Cache geladen wird.
+Alle Dateien ersetzen. Danach die installierte App vollständig schließen und neu öffnen. Falls weiterhin die alte Version erscheint, die Seite im Browser einmal neu laden.
