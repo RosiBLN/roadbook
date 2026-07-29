@@ -191,3 +191,11 @@ dialog label{display:block;font-size:12px;font-weight:800;margin:10px 0}
 .empty-list{text-align:center}.empty-list p{color:var(--muted)}
 #callBreakdown{display:block;margin-top:5px}
 @media(max-width:470px){.assistant-tools{grid-template-columns:1fr}.favorite-filter{min-height:44px}.trust-row{margin-top:12px}}
+
+/* Roadbook 4.3.1 – Routenlogik und Bedienkorrekturen */
+.route-first{margin:-2px 0 13px;padding:9px 11px;border-radius:12px;background:var(--mint);font-size:12px;color:var(--ink)}
+.external-hint{margin:-4px 2px 13px;color:var(--muted);font-size:11px;line-height:1.4}
+.call-cockpit{scroll-margin-top:10px}
+dialog form .primary{width:100%;margin-top:8px}
+.dialog-close{min-width:44px;min-height:44px;border-radius:12px}
+.dialog-close:active{background:var(--surface-2)}
